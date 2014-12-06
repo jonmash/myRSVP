@@ -767,96 +767,57 @@ License: MIT
 		<?php
 		}
 	}*/
-	
-	function rsvp_admin_guest() {
+
+	function rsvp_admin_family() {
 		global $wpdb;
-		if((count($_POST) > 0) && !empty($_POST['firstName']) && !empty($_POST['lastName'])) {
-			check_admin_referer('rsvp_add_guest');
-			$passcode = (isset($_POST['passcode'])) ? $_POST['passcode'] : "";
-			
+		if((count($_POST) > 0) && !empty($_POST['alias']) && !empty($_POST['pin'])) {
+			check_admin_referer('rsvp_add_family');
+						
 			if(isset($_SESSION[EDIT_SESSION_KEY]) && is_numeric($_SESSION[EDIT_SESSION_KEY])) {
-				$wpdb->update(ATTENDEES_TABLE, 
-											array("firstName" => trim($_POST['firstName']), 
-											      "lastName" => trim($_POST['lastName']), 
-												  "email" => trim($_POST['email']), 
-											      "personalGreeting" => trim($_POST['personalGreeting']), 
-												  "rsvpStatus" => trim($_POST['rsvpStatus'])), 
+				$wpdb->update(FAMILIES_TABLE, 
+											array("pin" => trim($_POST['pin']),
+											      "email" => trim($_POST['email']), 
+												  "alias" => trim($_POST['alias']), 
+												  "comments" => trim($_POST['comments'])), 
 											array("id" => $_SESSION[EDIT_SESSION_KEY]), 
-											array("%s", "%s", "%s", "%s", "%s"), 
+											array("%s", "%s", "%s", "%s"), 
 											array("%d"));
-				rsvp_printQueryDebugInfo();
 				$attendeeId = $_SESSION[EDIT_SESSION_KEY];
-				$wpdb->query($wpdb->prepare("DELETE FROM ".ASSOCIATED_ATTENDEES_TABLE." WHERE attendeeId = %d", $attendeeId));
-				$wpdb->query($wpdb->prepare("DELETE FROM ".ASSOCIATED_ATTENDEES_TABLE." WHERE associatedAttendeeID = %d", $attendeeId));
-        
+				rsvp_printQueryDebugInfo();     
 			} else {
-				$wpdb->insert(ATTENDEES_TABLE, array("firstName" => trim($_POST['firstName']), 
-				                                     "lastName" => trim($_POST['lastName']),
-													 "email" => trim($_POST['email']), 
-													 "personalGreeting" => trim($_POST['personalGreeting']), 
-													 "rsvpStatus" => trim($_POST['rsvpStatus'])), 
-				                                     array('%s', '%s', '%s', '%s', '%s'));
+				$wpdb->insert(FAMILIES_TABLE, array("pin" => trim($_POST['pin']), 
+				                                     "email" => trim($_POST['email']),
+													 "alias" => trim($_POST['alias']), 
+													 "comments" => trim($_POST['comments'])), 
+				                                     array('%s', '%s', '%s', '%s'));
 					
 				$attendeeId = $wpdb->insert_id;
 			}
-			if(isset($_POST['associatedAttendees']) && is_array($_POST['associatedAttendees'])) {
-				foreach($_POST['associatedAttendees'] as $aid) {
-					if(is_numeric($aid) && ($aid > 0)) {
-						$wpdb->insert(ASSOCIATED_ATTENDEES_TABLE, array("attendeeID"=>$attendeeId, "associatedAttendeeID"=>$aid), array("%d", "%d"));
-            $wpdb->insert(ASSOCIATED_ATTENDEES_TABLE, array("attendeeID"=>$aid, "associatedAttendeeID"=>$attendeeId), array("%d", "%d"));
-					}
-				}
-			}
-			
-			if(rsvp_require_passcode()) {
-				if(empty($passcode)) {
-					$passcode = rsvp_generate_passcode();
-				}
-        if(rsvp_require_unique_passcode() && !rsvp_is_passcode_unique($passcode, $attendeeId)) {
-          $passcode = rsvp_generate_passcode();
-        }
-				$wpdb->update(ATTENDEES_TABLE, 
-											array("passcode" => trim($passcode)), 
-											array("id"=>$attendeeId), 
-											array("%s"), 
-											array("%d"));
-			}
+
 		?>
-			<p>Attendee <?php echo htmlspecialchars(stripslashes($_POST['firstName']." ".$_POST['lastName']));?> has been successfully saved</p>
+			<p>Family <?php echo htmlspecialchars(stripslashes($_POST['alias']));?> has been successfully saved</p>
 			<p>
-				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-top-level">Continue to Attendee List</a> | 
+				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-top-level">Continue to Family List</a> | 
 				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-admin-guest">Add a Guest</a> 
 			</p>
 	<?php
 		} else {
 			$attendee = null;
 			unset($_SESSION[EDIT_SESSION_KEY]);
-			$associatedAttendees = array();
-			$firstName = "";
-			$lastName = "";
+			$name = "";
+			$family = "";
 			$email = "";
-			$personalGreeting = "";
-			$rsvpStatus = "NoResponse";
-			$passcode = "";
+			$attending = "NoResponse";
+			$food = "";
 			
 			if(isset($_GET['id']) && is_numeric($_GET['id'])) {
-				$attendee = $wpdb->get_row("SELECT id, firstName, lastName, email, personalGreeting, rsvpStatus, passcode FROM ".ATTENDEES_TABLE." WHERE id = ".$_GET['id']);
+				$attendee = $wpdb->get_row("SELECT id, family, name, attending, food FROM ".ATTENDEES_TABLE." WHERE id = ".$_GET['id']);
 				if($attendee != null) {
 					$_SESSION[EDIT_SESSION_KEY] = $attendee->id;
-					$firstName = stripslashes($attendee->firstName);
-					$lastName = stripslashes($attendee->lastName);
-          $email = stripslashes($attendee->email);
-					$personalGreeting = stripslashes($attendee->personalGreeting);
-					$rsvpStatus = $attendee->rsvpStatus;
-					$passcode = stripslashes($attendee->passcode);
-					
-					// Get the associated attendees and add them to an array
-					$associations = $wpdb->get_results("SELECT associatedAttendeeID FROM ".ASSOCIATED_ATTENDEES_TABLE." WHERE attendeeId = ".$attendee->id.
-																						 " UNION ".
-																						 "SELECT attendeeID FROM ".ASSOCIATED_ATTENDEES_TABLE." WHERE associatedAttendeeID = ".$attendee->id);
-					foreach($associations as $aId) {
-						$associatedAttendees[] = $aId->associatedAttendeeID;
-					}
+					$family = stripslashes($attendee->family);
+					$name = stripslashes($attendee->name);
+					$attending = stripslashes($attendee->attending);
+					$food = stripslashes($attendee->food);
 				} 
 			} 
 	?>
@@ -867,99 +828,156 @@ License: MIT
 				</p>
 				<table class="form-table">
 					<tr valign="top">
-						<th scope="row"><label for="firstName"><?php echo __("First Name", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="firstName" id="firstName" size="30" value="<?php echo htmlspecialchars($firstName); ?>" /></td>
+						<th scope="row"><label for="family"><?php echo __("Family", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="family" id="family" size="30" value="<?php echo htmlspecialchars($family); ?>" readonly/></td>
 					</tr>
 					<tr valign="top">
-						<th scope="row"><label for="lastName"><?php echo __("Last Name", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="lastName" id="lastName" size="30" value="<?php echo htmlspecialchars($lastName); ?>" /></td>
+						<th scope="row"><label for="name"><?php echo __("Name", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="name" id="name" size="30" value="<?php echo htmlspecialchars($name); ?>" /></td>
 					</tr>
-					<tr valign="top">
-						<th scope="row"><label for="email"><?php echo __("Email", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="email" id="email" size="30" value="<?php echo htmlspecialchars($email); ?>" /></td>
-					</tr>
-					<?php
-					if(rsvp_require_passcode()) {
-					?>
-						<tr valign="top">
-							<th scope="row"><label for="passcode">Passcode:</label></th>
-							<td align="left"><input type="text" name="passcode" id="passcode" size="30" value="<?php echo htmlspecialchars($passcode); ?>" maxlength="6" /></td>
-						</tr>
-					<?php	
-					}					
-					?>
 					<tr>
-						<th scope="row"><label for="rsvpStatus">RSVP Status</label></th>
+						<th scope="row"><label for="attending">Attending</label></th>
 						<td align="left">
-							<select name="rsvpStatus" id="rsvpStatus" size="1">
+							<select name="attending" id="attending" size="1">
 								<option value="NoResponse" <?php
-									echo (($rsvpStatus == "NoResponse") ? " selected=\"selected\"" : "");
+									echo (($attending == "NoResponse") ? " selected=\"selected\"" : "");
 								?>>No Response</option>
 								<option value="Yes" <?php
-									echo (($rsvpStatus == "Yes") ? " selected=\"selected\"" : "");
+									echo (($attending == "Yes") ? " selected=\"selected\"" : "");
 								?>>Yes</option>									
 								<option value="No" <?php
-									echo (($rsvpStatus == "No") ? " selected=\"selected\"" : "");
+									echo (($attending == "No") ? " selected=\"selected\"" : "");
 								?>>No</option>
 							</select>
 						</td>
 					</tr>
+
+					
+				</table>
+				<p class="submit">
+					<input type="submit" class="button-primary" value="<?php _e('Save'); ?>" />
+				</p>
+			</form>
+<?php
+		}
+	}
+	
+	function rsvp_admin_guest() {
+		global $wpdb;
+		if((count($_POST) > 0) && !empty($_POST['name']) && !empty($_POST['family'])) {
+			check_admin_referer('rsvp_add_guest');
+						
+			if(isset($_SESSION[EDIT_SESSION_KEY]) && is_numeric($_SESSION[EDIT_SESSION_KEY])) {
+				$wpdb->update(ATTENDEES_TABLE, 
+											array("family" => trim($_POST['family']),
+												  "name" => trim($_POST['name']), 
+											      "attending" => trim($_POST['attending']), 
+												  "food" => trim($_POST['food'])), 
+											array("id" => $_SESSION[EDIT_SESSION_KEY]), 
+											array("%d", "%s", "%s", "%s"), 
+											array("%d"));
+				$attendeeId = $_SESSION[EDIT_SESSION_KEY];
+				rsvp_printQueryDebugInfo();     
+			} else {
+				$wpdb->insert(ATTENDEES_TABLE, array("family" => trim($_POST['family']), 
+				                                     "name" => trim($_POST['name']),
+													 "attending" => trim($_POST['attending']), 
+													 "food" => trim($_POST['food'])), 
+				                                     array('%d', '%s', '%s', '%s'));
+					
+				$attendeeId = $wpdb->insert_id;
+			}
+
+		?>
+			<p>Attendee <?php echo htmlspecialchars(stripslashes($_POST['name']));?> has been successfully saved</p>
+			<p>
+				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-top-level">Continue to Attendee List</a> | 
+				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-admin-guest">Add a Guest</a> 
+			</p>
+	<?php
+		} else {
+			$attendee = null;
+			unset($_SESSION[EDIT_SESSION_KEY]);
+			$name = "";
+			$family = "";
+			$email = "";
+			$attending = "NoResponse";
+			$food = "";
+			
+			if(isset($_GET['family']) && is_numeric($_GET['family'])) {
+				$family = $_GET['family'];
+			}
+			else { //Check to make sure the family ID is specified.			
+?>
+			<p>Cannot access this page like this!</p>
+			<p>
+				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-top-level">Back to Attendee List</a> | 
+			</p>
+	<?php			
+				return;
+			}
+			
+			
+			if(isset($_GET['id']) && is_numeric($_GET['id'])) {
+				$attendee = $wpdb->get_row("SELECT id, family, name, attending, food FROM ".ATTENDEES_TABLE." WHERE id = ".$_GET['id']);
+				if($attendee != null) {
+					$_SESSION[EDIT_SESSION_KEY] = $attendee->id;
+					$family = stripslashes($attendee->family);
+					$name = stripslashes($attendee->name);
+					$attending = stripslashes($attendee->attending);
+					$food = stripslashes($attendee->food);
+				} 
+			} 
+	?>
+			<form name="contact" action="admin.php?page=rsvp-admin-guest" method="post">
+				<?php wp_nonce_field('rsvp_add_guest'); ?>
+				<p class="submit">
+					<input type="submit" class="button-primary" value="<?php _e('Save'); ?>" />
+				</p>
+				<table class="form-table">
 					<tr valign="top">
-						<th scope="row" valign="top"><label for="personalGreeting">Custom Message:</label></th>
-						<td align="left"><textarea name="personalGreeting" id="personalGreeting" rows="5" cols="40"><?php echo htmlspecialchars($personalGreeting); ?></textarea></td>
+						<th scope="row"><label for="family"><?php echo __("Family", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="family" id="family" size="30" value="<?php echo htmlspecialchars($family); ?>" /></td>
 					</tr>
 					<tr valign="top">
-						<th scope="row">Associated Attendees:</th>
+						<th scope="row"><label for="name"><?php echo __("Name", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="name" id="name" size="30" value="<?php echo htmlspecialchars($name); ?>" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="attending">RSVP Status</label></th>
 						<td align="left">
-							<select name="associatedAttendees[]" multiple="multiple" size="5" style="height: 200px;">
-								<?php
-									$attendees = $wpdb->get_results("SELECT id, firstName, lastName FROM ".$wpdb->prefix."attendees ORDER BY lastName, firstName");
-									foreach($attendees as $a) {
-										if($a->id != $_SESSION[EDIT_SESSION_KEY]) {
-								?>
-											<option value="<?php echo $a->id; ?>" 
-															<?php echo ((in_array($a->id, $associatedAttendees)) ? "selected=\"selected\"" : ""); ?>><?php echo htmlspecialchars(stripslashes($a->firstName)." ".stripslashes($a->lastName)); ?></option>
-								<?php
-										}
-									}
-								?>
+							<select name="attending" id="attending" size="1">
+								<option value="NoResponse" <?php
+									echo (($attending == "NoResponse") ? " selected=\"selected\"" : "");
+								?>>No Response</option>
+								<option value="Yes" <?php
+									echo (($attending == "Yes") ? " selected=\"selected\"" : "");
+								?>>Yes</option>									
+								<option value="No" <?php
+									echo (($attending == "No") ? " selected=\"selected\"" : "");
+								?>>No</option>
 							</select>
 						</td>
 					</tr>
-				<?php
-				if(($attendee != null) && ($attendee->id > 0)) {
-					$sql = "SELECT question, answer FROM ".ATTENDEE_ANSWERS." ans 
-						INNER JOIN ".QUESTIONS_TABLE." q ON q.id = ans.questionID 
-						WHERE attendeeID = %d 
-						ORDER BY q.sortOrder";
-					$aRs = $wpdb->get_results($wpdb->prepare($sql, $attendee->id));
-					if(count($aRs) > 0) {
-				?>
-				<tr>
-					<td colspan="2">
-						<h4>Custom Questions Answered</h4>
-						<table cellpadding="2" cellspacing="0" border="0">
-							<tr>
-								<th>Question</th>
-								<th>Answer</th>
-							</tr>
-				<?php
-						foreach($aRs as $a) {
-				?>
-							<tr>
-								<td><?php echo stripslashes($a->question); ?></td>
-								<td><?php echo str_replace("||", ", ", stripslashes($a->answer)); ?></td>
-							</tr>
-				<?php
-						}
-				?>
-						</table>
-					</td>
-				</tr>
-				<?php
-					}
-				}
-				?>
+					<tr>
+						<th scope="row"><label for="food">Food</label></th>
+						<td align="left">
+							<select name="food" id="food" size="1">
+								<option value="NoResponse" <?php
+									echo (($food == "NoResponse") ? " selected=\"selected\"" : "");
+								?>>No Response</option>
+								<option value="Meat" <?php
+									echo (($food == "Meat") ? " selected=\"selected\"" : "");
+								?>>Meat</option>									
+								<option value="Fish" <?php
+									echo (($food == "Fish") ? " selected=\"selected\"" : "");
+								?>>Fish</option>
+								<option value="Veg" <?php
+									echo (($food == "Veg") ? " selected=\"selected\"" : "");
+								?>>Vegetarian</option>
+							</select>
+						</td>
+					</tr>
 				</table>
 				<p class="submit">
 					<input type="submit" class="button-primary" value="<?php _e('Save'); ?>" />
