@@ -768,6 +768,7 @@ License: MIT
 		}
 	}*/
 
+	//Add/Edit Family
 	function rsvp_admin_family() {
 		global $wpdb;
 		if((count($_POST) > 0) && !empty($_POST['alias']) && !empty($_POST['pin'])) {
@@ -798,70 +799,65 @@ License: MIT
 			<p>Family <?php echo htmlspecialchars(stripslashes($_POST['alias']));?> has been successfully saved</p>
 			<p>
 				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-top-level">Continue to Family List</a> | 
-				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-admin-guest">Add a Guest</a> 
+				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-admin-guest&family=<?php echo $attendeeId ?>">Add a Guest to This Family</a> 
 			</p>
 	<?php
 		} else {
-			$attendee = null;
+			$family = null;
 			unset($_SESSION[EDIT_SESSION_KEY]);
-			$name = "";
-			$family = "";
+			$pin = "";
 			$email = "";
-			$attending = "NoResponse";
-			$food = "";
+			$alias = "";
+			$comments = "";
+			$link = "";
 			
 			if(isset($_GET['id']) && is_numeric($_GET['id'])) {
-				$attendee = $wpdb->get_row("SELECT id, family, name, attending, food FROM ".ATTENDEES_TABLE." WHERE id = ".$_GET['id']);
-				if($attendee != null) {
-					$_SESSION[EDIT_SESSION_KEY] = $attendee->id;
-					$family = stripslashes($attendee->family);
-					$name = stripslashes($attendee->name);
-					$attending = stripslashes($attendee->attending);
-					$food = stripslashes($attendee->food);
+				$family = $wpdb->get_row("SELECT id, pin, date, ip, email, alias, comments FROM ".FAMILIES_TABLE." WHERE id = ".$_GET['id']);
+				if($family != null) {
+					$_SESSION[EDIT_SESSION_KEY] = $family->id;
+					$pin = stripslashes($family->pin);
+					$email = stripslashes($family->email);
+					$alias = stripslashes($family->alias);
+					$comments = stripslashes($family->comments);
+					$link = "<a href=\"" . get_option('siteurl') ."/wp-admin/admin.php?page=rsvp-admin-guest&family=" . $attendeeId  ."\">Add a Guest to This Family</a> ";
 				} 
 			} 
 	?>
-			<form name="contact" action="admin.php?page=rsvp-admin-guest" method="post">
-				<?php wp_nonce_field('rsvp_add_guest'); ?>
+			<form name="contact" action="admin.php?page=rsvp-admin-family" method="post">
+				<?php wp_nonce_field('rsvp_add_family'); ?>
 				<p class="submit">
 					<input type="submit" class="button-primary" value="<?php _e('Save'); ?>" />
 				</p>
 				<table class="form-table">
 					<tr valign="top">
-						<th scope="row"><label for="family"><?php echo __("Family", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="family" id="family" size="30" value="<?php echo htmlspecialchars($family); ?>" readonly/></td>
+						<th scope="row"><label for="alias"><?php echo __("Family Alias", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="alias" id="alias" size="30" value="<?php echo htmlspecialchars($alias); ?>"/></td>
 					</tr>
 					<tr valign="top">
-						<th scope="row"><label for="name"><?php echo __("Name", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="name" id="name" size="30" value="<?php echo htmlspecialchars($name); ?>" /></td>
+						<th scope="row"><label for="email"><?php echo __("Email", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="email" id="email" size="30" value="<?php echo htmlspecialchars($email); ?>" /></td>
 					</tr>
-					<tr>
-						<th scope="row"><label for="attending">Attending</label></th>
-						<td align="left">
-							<select name="attending" id="attending" size="1">
-								<option value="NoResponse" <?php
-									echo (($attending == "NoResponse") ? " selected=\"selected\"" : "");
-								?>>No Response</option>
-								<option value="Yes" <?php
-									echo (($attending == "Yes") ? " selected=\"selected\"" : "");
-								?>>Yes</option>									
-								<option value="No" <?php
-									echo (($attending == "No") ? " selected=\"selected\"" : "");
-								?>>No</option>
-							</select>
-						</td>
+					<tr valign="top">
+						<th scope="row"><label for="pin"><?php echo __("PIN", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="pin" id="pin" size="30" value="<?php echo htmlspecialchars($pin); ?>" /></td>
 					</tr>
-
-					
+					<tr valign="top">
+						<th scope="row"><label for="coments"><?php echo __("Comments", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="coments" id="coments" size="30" value="<?php echo htmlspecialchars($coments); ?>" /></td>
+					</tr>
 				</table>
 				<p class="submit">
 					<input type="submit" class="button-primary" value="<?php _e('Save'); ?>" />
+				</p>
+				<p>
+				<?php echo $link; ?>
 				</p>
 			</form>
 <?php
 		}
 	}
 	
+	//Add/Edit Guest
 	function rsvp_admin_guest() {
 		global $wpdb;
 		if((count($_POST) > 0) && !empty($_POST['name']) && !empty($_POST['family'])) {
@@ -913,7 +909,7 @@ License: MIT
 			<p>
 				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-top-level">Back to Attendee List</a> | 
 			</p>
-	<?php			
+<?php			
 				return;
 			}
 			
@@ -937,7 +933,7 @@ License: MIT
 				<table class="form-table">
 					<tr valign="top">
 						<th scope="row"><label for="family"><?php echo __("Family", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="family" id="family" size="30" value="<?php echo htmlspecialchars($family); ?>" /></td>
+						<td align="left"><input type="text" name="family" id="family" size="30" value="<?php echo htmlspecialchars($family); ?>" disabled="disabled"/></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="name"><?php echo __("Name", 'rsvp-plugin'); ?>:</label></th>
