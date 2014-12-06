@@ -851,6 +851,7 @@ License: MIT
 				</p>
 				<p>
 				<?php echo $link; ?>
+				<!-- TODO: Add a list of Attendees here -->
 				</p>
 			</form>
 <?php
