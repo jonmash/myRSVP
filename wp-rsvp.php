@@ -15,6 +15,7 @@ Author URI: http://jonmash.ca
 License: MIT
 */
 	session_start();
+	global $wpdb;
 	define("ATTENDEES_TABLE", $wpdb->prefix."rsvp_attendees");
 	define("ATTEMPTS_TABLE", $wpdb->prefix."rsvp_attempts");
 	define("FAMILIES_TABLE", $wpdb->prefix."rsvp_families");
@@ -38,6 +39,7 @@ License: MIT
 	define("OPTION_RSVP_CUSTOM_YES_NO", "rsvp_custom_yes_no");
 	define("OPTION_RSVP_GUEST_EMAIL_CONFIRMATION", "rsvp_guest_email_confirmation");
 	define("OPTION_RSVP_EMAIL_TEXT", "rsvp_email_text");
+	define("OPTION_DEBUG_RSVP_QUERIES", "Y");
 	define("RSVP_DB_VERSION", "1");
 	define("QT_SHORT", "shortAnswer");
 	define("QT_MULTI", "multipleChoice");
@@ -229,7 +231,7 @@ License: MIT
 			}
 		}
 		
-		$sql = "SELECT id, pin, email, alias, comments FROM ".ATTENDEES_TABLE;
+		$sql = "SELECT id, pin, email, alias, comments FROM ".FAMILIES_TABLE;
 		$orderBy = " alias";
 		if(isset($_GET['sort'])) {
 			if(strToLower($_GET['sort']) == "id") {
@@ -242,8 +244,8 @@ License: MIT
 			}				
 		}
 		$sql .= " ORDER BY ".$orderBy;
-		$families = $wpdb->get_results($sql);
 		
+		$families = $wpdb->get_results($sql);
 		$sort = "";
 		$sortDirection = "asc";
 		if(isset($_GET['sort'])) {
@@ -287,12 +289,12 @@ License: MIT
 					<tr>
 						<th scope="col" class="manage-column column-cb check-column" style=""><input type="checkbox" id="cb" /></th>
 						<th scope="col" id="rsvpAlias" class="manage-column column-title" style="">Family<br />
-							<a href="admin.php?page=rsvp-top-level&amp;sort=alias&amp;sortDirection=asc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/uparrow<?php 
+							<a href="admin.php?page=rsvp-admin-familylist&amp;sort=alias&amp;sortDirection=asc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/uparrow<?php 
 									echo ((($sort == "alias") && ($sortDirection == "asc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Ascending Alias" title="Sort Ascending Alias" border="0"></a> &nbsp;
-							<a href="admin.php?page=rsvp-top-level&amp;sort=alias&amp;sortDirection=desc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/downarrow<?php 
+							<a href="admin.php?page=rsvp-admin-familylist&amp;sort=alias&amp;sortDirection=desc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/downarrow<?php 
 									echo ((($sort == "alias") && ($sortDirection == "desc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Descending Alias" title="Sort Descending Alias" border="0"></a>
 						</th>			
@@ -418,32 +420,32 @@ License: MIT
 						<th scope="col" class="manage-column column-cb check-column" style=""><input type="checkbox" id="cb" /></th>
 						<th scope="col" id="rsvpFamily" class="manage-column column-title">Family</th>
 						<th scope="col" id="attendeeName" class="manage-column column-title" style="">Attendee<br />
-							<a href="admin.php?page=rsvp-top-level&amp;sort=name&amp;sortDirection=asc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/uparrow<?php 
+							<a href="admin.php?page=rsvp-admin-attendeelist&amp;sort=name&amp;sortDirection=asc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/uparrow<?php 
 									echo ((($sort == "name") && ($sortDirection == "asc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Ascending Attendee Name" title="Sort Ascending Attendee Name" border="0"></a> &nbsp;
-							<a href="admin.php?page=rsvp-top-level&amp;sort=attendee&amp;sortDirection=desc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/downarrow<?php 
+							<a href="admin.php?page=rsvp-admin-attendeelist&amp;sort=name&amp;sortDirection=desc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/downarrow<?php 
 									echo ((($sort == "name") && ($sortDirection == "desc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Descending Attendee Name" title="Sort Descending Attendee Name" border="0"></a>
 						</th>			
 						<th scope="col" id="rsvpStatus" class="manage-column column-title">Attending<br />
-							<a href="admin.php?page=rsvp-top-level&amp;sort=attending&amp;sortDirection=asc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/uparrow<?php 
+							<a href="admin.php?page=rsvp-admin-attendeelist&amp;sort=attending&amp;sortDirection=asc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/uparrow<?php 
 									echo ((($sort == "attending") && ($sortDirection == "asc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Ascending RSVP Status" title="Sort Ascending RSVP Status" border="0"></a> &nbsp;
-							<a href="admin.php?page=rsvp-top-level&amp;sort=attending&amp;sortDirection=desc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/downarrow<?php 
+							<a href="admin.php?page=rsvp-admin-attendeelist&amp;sort=attending&amp;sortDirection=desc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/downarrow<?php 
 									echo ((($sort == "attending") && ($sortDirection == "desc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Descending RSVP Status" title="Sort Descending RSVP Status" border="0"></a>						
 						</th>
 						<th scope="col" id="rsvpFood" class="manage-column column-title" style="">Food<br />
-							<a href="admin.php?page=rsvp-top-level&amp;sort=food&amp;sortDirection=asc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/uparrow<?php 
+							<a href="admin.php?page=rsvp-admin-attendeelist&amp;sort=food&amp;sortDirection=asc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/uparrow<?php 
 									echo ((($sort == "food") && ($sortDirection == "asc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Ascending Food" title="Sort Ascending Food" border="0"></a>
-							<a href="admin.php?page=rsvp-top-level&amp;sort=food&amp;sortDirection=desc">
-								<img src="<?php echo plugins_url(); ?>/rsvp/downarrow<?php 
+							<a href="admin.php?page=rsvp-admin-attendeelist&amp;sort=food&amp;sortDirection=desc">
+								<img src="<?php echo plugins_url(); ?>/myRSVP/downarrow<?php 
 									echo ((($sort == "food") && ($sortDirection == "desc")) ? "_selected" : ""); ?>.gif" width="11" height="9" 
 									alt="Sort Descending Food" title="Sort Descending Food" border="0"></a>
 						</th>
@@ -462,7 +464,7 @@ License: MIT
 								<a href="<?php echo get_option("siteurl"); ?>/wp-admin/admin.php?page=rsvp-admin-family&amp;id=<?php echo $attendee->family; ?>"><?php echo htmlspecialchars(stripslashes($attendee->family)); ?></a>
 							</td>
 							<td>
-								<a href="<?php echo get_option("siteurl"); ?>/wp-admin/admin.php?page=rsvp-admin-guest&amp;id=<?php echo $attendee->id; ?>"><?php echo htmlspecialchars(stripslashes($attendee->name)); ?></a>
+								<a href="<?php echo get_option("siteurl"); ?>/wp-admin/admin.php?page=rsvp-admin-guest&amp;id=<?php echo $attendee->id; ?>&amp;family=<?php echo $attendee->family; ?>"><?php echo htmlspecialchars(stripslashes($attendee->name)); ?></a>
 							</td>
 							<td><?php echo htmlspecialchars(stripslashes($attendee->attending)); ?></td>
 							<td><?php echo htmlspecialchars(stripslashes($attendee->food)); ?></td>
@@ -530,7 +532,7 @@ License: MIT
 					$email = stripslashes($family->email);
 					$alias = stripslashes($family->alias);
 					$comments = stripslashes($family->comments);
-					$link = "<a href=\"" . get_option('siteurl') ."/wp-admin/admin.php?page=rsvp-admin-guest&family=" . $attendeeId  ."\">Add a Guest to This Family</a> ";
+					$link = "<a href=\"" . get_option('siteurl') ."/wp-admin/admin.php?page=rsvp-admin-guest&family=" . $family->id  ."\">Add a Guest to This Family</a> ";
 				} 
 			} 
 	?>
@@ -553,18 +555,51 @@ License: MIT
 						<td align="left"><input type="text" name="pin" id="pin" size="30" value="<?php echo htmlspecialchars($pin); ?>" /></td>
 					</tr>
 					<tr valign="top">
-						<th scope="row"><label for="coments"><?php echo __("Comments", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="coments" id="coments" size="30" value="<?php echo htmlspecialchars($coments); ?>" /></td>
+						<th scope="row"><label for="comments"><?php echo __("Comments", 'rsvp-plugin'); ?>:</label></th>
+						<td align="left"><input type="text" name="comments" id="comments" size="30" value="<?php echo htmlspecialchars($comments); ?>" /></td>
 					</tr>
 				</table>
 				<p class="submit">
 					<input type="submit" class="button-primary" value="<?php _e('Save'); ?>" />
 				</p>
 				<p>
-				<?php echo $link; ?>
-				<!-- TODO: Add a list of Attendees here -->
+					<?php echo $link; ?>
 				</p>
 			</form>
+			<?php
+				$sql = "SELECT id, family, name, attending, food FROM ".ATTENDEES_TABLE." WHERE family = " . $_GET['id'] . ";";
+				$attendees = $wpdb->get_results($sql);
+			?>
+			
+			Attendee List:
+						<table class="widefat post fixed" cellspacing="0">
+				<thead>
+					<tr>
+						<th scope="col" id="attendeeName" class="manage-column column-title" style="">Attendee</th>			
+						<th scope="col" id="rsvpStatus" class="manage-column column-title">Attending</th>
+						<th scope="col" id="rsvpFood" class="manage-column column-title" style="">Food</th>
+					</tr>
+				</thead>
+			</table>
+			<table class="widefat post fixed" cellspacing="0">
+			<?php
+				$i = 0;
+				foreach($attendees as $attendee) {
+				?>
+					<tr class="<?php echo (($i % 2 == 0) ? "alternate" : ""); ?> author-self">
+						<td>
+							<a href="<?php echo get_option("siteurl"); ?>/wp-admin/admin.php?page=rsvp-admin-guest&amp;id=<?php echo $attendee->id; ?>&amp;family=<?php echo $attendee->family; ?>"><?php echo htmlspecialchars(stripslashes($attendee->name)); ?></a>
+						</td>
+						<td><?php echo htmlspecialchars(stripslashes($attendee->attending)); ?></td>
+						<td><?php echo htmlspecialchars(stripslashes($attendee->food)); ?></td>
+					</tr>
+				<?php
+					$i++;
+				}
+				if(!$attendees) echo "<tr><td><strong>No Attendees Yet!</strong></td></tr>";
+			?>
+			</table>
+			
 <?php
 		}
 	}
@@ -574,8 +609,9 @@ License: MIT
 		global $wpdb;
 		if((count($_POST) > 0) && !empty($_POST['name']) && !empty($_POST['family'])) {
 			check_admin_referer('rsvp_add_guest');
-						
+					
 			if(isset($_SESSION[EDIT_SESSION_KEY]) && is_numeric($_SESSION[EDIT_SESSION_KEY])) {
+				
 				$wpdb->update(ATTENDEES_TABLE, 
 											array("family" => trim($_POST['family']),
 												  "name" => trim($_POST['name']), 
@@ -587,6 +623,7 @@ License: MIT
 				$attendeeId = $_SESSION[EDIT_SESSION_KEY];
 				rsvp_printQueryDebugInfo();     
 			} else {
+				echo "Inserting";
 				$wpdb->insert(ATTENDEES_TABLE, array("family" => trim($_POST['family']), 
 				                                     "name" => trim($_POST['name']),
 													 "attending" => trim($_POST['attending']), 
@@ -594,13 +631,14 @@ License: MIT
 				                                     array('%d', '%s', '%s', '%s'));
 					
 				$attendeeId = $wpdb->insert_id;
+				rsvp_printQueryDebugInfo();
 			}
 
 		?>
 			<p>Attendee <?php echo htmlspecialchars(stripslashes($_POST['name']));?> has been successfully saved</p>
 			<p>
-				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-top-level">Continue to Attendee List</a> | 
-				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-admin-guest">Add a Guest</a> 
+				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-admin-attendeelist">Continue to Attendee List</a> | 
+				<a href="<?php echo get_option('siteurl'); ?>/wp-admin/admin.php?page=rsvp-admin-guest&family=<?php echo htmlspecialchars(stripslashes($_POST['family']));?>">Add another guest to this family</a> 
 			</p>
 	<?php
 		} else {
@@ -612,7 +650,7 @@ License: MIT
 			$attending = "NoResponse";
 			$food = "";
 			
-			if(isset($_GET['family']) && is_numeric($_GET['family'])) {
+			if((isset($_GET['family']) && is_numeric($_GET['family'])) || (isset($_POST['family']) && is_numeric($_POST['family']))) {
 				$family = $_GET['family'];
 			}
 			else { //Check to make sure the family ID is specified.			
@@ -635,9 +673,10 @@ License: MIT
 					$attending = stripslashes($attendee->attending);
 					$food = stripslashes($attendee->food);
 				} 
+				rsvp_printQueryDebugInfo();
 			} 
 	?>
-			<form name="contact" action="admin.php?page=rsvp-admin-guest" method="post">
+			<form name="contact" action="admin.php?page=rsvp-admin-guest&family=<?php echo htmlspecialchars($family); ?>" method="post">
 				<?php wp_nonce_field('rsvp_add_guest'); ?>
 				<p class="submit">
 					<input type="submit" class="button-primary" value="<?php _e('Save'); ?>" />
@@ -645,7 +684,7 @@ License: MIT
 				<table class="form-table">
 					<tr valign="top">
 						<th scope="row"><label for="family"><?php echo __("Family", 'rsvp-plugin'); ?>:</label></th>
-						<td align="left"><input type="text" name="family" id="family" size="30" value="<?php echo htmlspecialchars($family); ?>" disabled="disabled"/></td>
+						<td align="left"><input type="text" name="family" id="family" size="30" value="<?php echo htmlspecialchars($family); ?>" readonly="readonly"/></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="name"><?php echo __("Name", 'rsvp-plugin'); ?>:</label></th>
@@ -698,14 +737,7 @@ License: MIT
 	
 	function rsvp_modify_menu() {
 		
-		$page = add_options_page('RSVP Options',	//page title
-	                   'RSVP Options',	//subpage title
-	                   'manage_options',	//access
-	                   'rsvp-options',		//current file
-	                   'rsvp_admin_options'	//options function above
-	                   );
-		add_action('admin_print_scripts-' . $page, 'rsvp_admin_scripts'); 
-		
+
 		$page = add_menu_page("myRSVP Plugin", 
 									"myRSVP Plugin", 
 									"publish_posts", 
@@ -714,8 +746,8 @@ License: MIT
 		add_action('admin_print_scripts-' . $page, 'rsvp_admin_scripts'); 
 		
 		$page = add_submenu_page("rsvp-top-level", 
-										 "View Family-list",
-										 "View Family-list",
+										 "All Families",
+										 "All Families",
 										 "publish_posts", 
 										 "rsvp-admin-familylist",
 										 "rsvp_admin_familylist");
@@ -730,11 +762,11 @@ License: MIT
 		add_action('admin_print_scripts-' . $page, 'rsvp_admin_scripts'); 
 		
 		$page = add_submenu_page("rsvp-top-level", 
-										 "View Guest-list",
-										 "View Guest-list",
+										 "All Guests",
+										 "All Guests",
 										 "publish_posts", 
-										 "rsvp-admin-guestlist",
-										 "rsvp_admin_guestlist");
+										 "rsvp-admin-attendeelist",
+										 "rsvp_admin_attendeelist");
 		add_action('admin_print_scripts-' . $page, 'rsvp_admin_scripts'); 
 		
 		$page = add_submenu_page("rsvp-top-level", 
@@ -746,8 +778,8 @@ License: MIT
 		add_action('admin_print_scripts-' . $page, 'rsvp_admin_scripts'); 
 		
 		$page = add_submenu_page("rsvp-top-level",
-                       'RSVP Options',	//page title
-	                   'RSVP Options',	//subpage title
+                       'myRSVP Options',	//page title
+	                   'myRSVP Options',	//subpage title
 	                   'manage_options',	//access
 	                   'rsvp-options',		//current file
 	                   'rsvp_admin_options'	//options function above
@@ -773,6 +805,7 @@ License: MIT
 		register_setting('rsvp-option-group', OPTION_RSVP_GUEST_EMAIL_CONFIRMATION);
 		register_setting('rsvp-option-group', OPTION_RSVP_DISABLE_CUSTOM_EMAIL_FROM);
 		register_setting('rsvp-option-group', OPTION_RSVP_EMAIL_TEXT);
+		register_setting('rsvp-option-group', OPTION_DEBUG_RSVP_QUERIES);
     
 		wp_register_script('jquery_table_sort', plugins_url('jquery.tablednd_0_5.js',RSVP_PLUGIN_FILE));
 		wp_register_script('jquery_ui', rsvp_getHttpProtocol()."://ajax.microsoft.com/ajax/jquery.ui/1.8.5/jquery-ui.js");
@@ -801,7 +834,7 @@ License: MIT
 	function rsvp_printQueryDebugInfo() {
 		global $wpdb;
 		
-		if(get_option(OPTION_DEBUG_RSVP_QUERIES) == "Y") {
+		if(get_option(OPTION_DEBUG_RSVP_QUERIES) == "Y" || 1==1) {
 			echo "<br />Sql Output: ";
 			$wpdb->print_error();
 			echo "<br />";

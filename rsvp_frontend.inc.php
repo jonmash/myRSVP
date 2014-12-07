@@ -1,23 +1,22 @@
 <?php 
 $rsvp_form_action = htmlspecialchars(rsvp_getCurrentPageURL());
 
-if(get_option(OPTION_RSVP_DONT_USE_HASH) != "Y") {
-  $rsvp_form_action .= "#rsvpArea";
-}
 $rsvp_saved_form_vars = array();
 // load some defaults
 $rsvp_saved_form_vars['mainRsvp'] = "";
 $rsvp_saved_form_vars['rsvp_note'] = "";
 
-function rsvp_handle_output ($intialText, $rsvpText) {	
-  $rsvpText = "<a name=\"rsvpArea\" id=\"rsvpArea\"></a>".$rsvpText;
-  remove_filter("the_content", "wpautop");
-	return str_replace(RSVP_FRONTEND_TEXT_CHECK, $rsvpText, $intialText);
+function rsvp_handle_output ($intialText, $text) {	
+	$text = "<a name=\"rsvpArea\" id=\"rsvpArea\"></a>".$text;
+	
+	//Remove the filter that turns double newline to paragraphs.
+	remove_filter("the_content", "wpautop");
+	return str_replace(RSVP_FRONTEND_TEXT_CHECK, $text, $intialText);
 }
 
 function rsvp_frontend_handler($text) {
 	global $wpdb; 
-	$passcodeOptionEnabled = (rsvp_require_passcode()) ? true : false;
+		
 	//QUIT if the replacement string doesn't exist
 	if (!strstr($text,RSVP_FRONTEND_TEXT_CHECK)) return $text;
 	
@@ -146,7 +145,7 @@ function rsvp_frontend_prompt_to_edit($attendee) {
 	$prompt .= sprintf(RSVP_START_PARA.$editGreeting.RSVP_END_PARA, 
                      htmlspecialchars(stripslashes($attendee->firstName." ".$attendee->lastName)));
 	$prompt .= "<form method=\"post\" action=\"$rsvp_form_action\">\r\n
-								<input type=\"hidden\" name=\"attendeeID\" value=\"".$attendee->id."\" />
+								<input type=\"hidden\" name=\"familyID\" value=\"".$attendee->id."\" />
 								<input type=\"hidden\" name=\"rsvpStep\" id=\"rsvpStep\" value=\"editattendee\" />
 								<input type=\"submit\" value=\"".__("Yes", 'rsvp-plugin')."\" onclick=\"document.getElementById('rsvpStep').value='editattendee';\" />
 								<input type=\"submit\" value=\"".__("No", 'rsvp-plugin')."\" onclick=\"document.getElementById('rsvpStep').value='newsearch';\"  />
@@ -514,51 +513,24 @@ function rsvp_buildAdditionalQuestions($attendeeID, $prefix) {
 
 function rsvp_find(&$output, &$text) {
 	global $wpdb, $rsvp_form_action;
-  $passcodeOptionEnabled = (rsvp_require_passcode()) ? true : false;
-  $passcodeOnlyOption = (rsvp_require_only_passcode_to_register()) ? true : false;
+
+	$pin = "";
+	if(isset($_REQUEST['pin'])) {
+		$pin = $_REQUEST['pin'];
+	}
+
+  	$family = $wpdb->get_row($wpdb->prepare("SELECT id, pin, date, ip, email, alias, comments   FROM ".FAMILIES_TABLE." 
+																								WHERE pin = %s", $pin));
 	
-	//$_SESSION['rsvpFirstName'] = $_POST['firstName'];
-	//$_SESSION['rsvpLastName'] = $_POST['lastName'];
-	$passcode = "";
-	if(isset($_REQUEST['passcode'])) {
-		$passcode = $_REQUEST['passcode'];
-		//$_SESSION['rsvpPasscode'] = $_POST['passcode'];
-	}
-  
-	$firstName = $_REQUEST['firstName'];
-	$lastName = $_REQUEST['lastName'];
-				
-	if(!$passcodeOnlyOption && ((strlen($_REQUEST['firstName']) <= 1) || (strlen($_REQUEST['lastName']) <= 1))) {
-		$output = "<p class=\"rsvpParagraph\" style=\"color:red\">".__("A first and last name must be specified", 'rsvp-plugin')."</p>\r\n";
-		$output .= rsvp_frontend_greeting();
-					
-		return rsvp_handle_output($text, $output);
-	}
-				
-	// Try to find the user.
-	if($passcodeOptionEnabled) {
-    if($passcodeOnlyOption) {
-  		$attendee = $wpdb->get_row($wpdb->prepare("SELECT id, firstName, lastName, rsvpStatus 
-  																							 FROM ".ATTENDEES_TABLE." 
-  																							 WHERE passcode = %s", $passcode));
-    } else {
-  		$attendee = $wpdb->get_row($wpdb->prepare("SELECT id, firstName, lastName, rsvpStatus 
-  																							 FROM ".ATTENDEES_TABLE." 
-  																							 WHERE firstName = %s AND lastName = %s AND passcode = %s", $firstName, $lastName, $passcode));
-    }
-    
-		
-	} else {
-		$attendee = $wpdb->get_row($wpdb->prepare("SELECT id, firstName, lastName, rsvpStatus 
-																							 FROM ".ATTENDEES_TABLE." 
-																							 WHERE firstName = %s AND lastName = %s", $firstName, $lastName));
-	}
-  
-	if($attendee != null) {
+	printf("SELECT id, pin, date, ip, email, alias, comments   FROM ".FAMILIES_TABLE." WHERE pin = %s", $pin);
+	
+	print_r($family);
+	rsvp_printQueryDebugInfo();
+	if($family != null) {
 		// hey we found something, we should move on and print out any associated users and let them rsvp
 		$output = "<div>\r\n";
-		if(strtolower($attendee->rsvpStatus) == "noresponse") {
-			$output .= RSVP_START_PARA."Hi ".htmlspecialchars(stripslashes($attendee->firstName." ".$attendee->lastName))."!".RSVP_END_PARA;
+		if(strtolower($family->rsvpStatus) == "noresponse") {
+			$output .= RSVP_START_PARA."Hi ".htmlspecialchars(stripslashes($family->firstName." ".$family->lastName))."!".RSVP_END_PARA;
 						
 			if(trim(get_option(OPTION_WELCOME_TEXT)) != "") {
 				$output .= RSVP_START_PARA.trim(get_option(OPTION_WELCOME_TEXT)).RSVP_END_PARA;
@@ -566,45 +538,16 @@ function rsvp_find(&$output, &$text) {
 				$output .= RSVP_START_PARA.__("There are a few more questions we need to ask you if you could please fill them out below to finish up the RSVP process.", 'rsvp-plugin').RSVP_END_PARA;
 			}
 						
-			$output .= rsvp_frontend_main_form($attendee->id);
+			$output .= rsvp_frontend_main_form($family->id);
 		} else {
-			$output .= rsvp_frontend_prompt_to_edit($attendee);
+			$output .= rsvp_frontend_prompt_to_edit($family);
 		}
+		
 		return rsvp_handle_output($text, $output."</div>\r\n");
 	}
-				
-	// We did not find anyone let's try and do a rough search
-	$attendees = null;
-	if(!$passcodeOptionEnabled) {
-		for($i = 3; $i >= 1; $i--) {
-			$truncFirstName = rsvp_chomp_name($firstName, $i);
-			$attendees = $wpdb->get_results("SELECT id, firstName, lastName, rsvpStatus FROM ".ATTENDEES_TABLE." 
-																			 WHERE lastName = '".mysql_real_escape_string($lastName)."' AND firstName LIKE '".mysql_real_escape_string($truncFirstName)."%'");
-			if(count($attendees) > 0) {
-				$output = RSVP_START_PARA."<strong>".__("We could not find an exact match but could any of the below entries be you?", 'rsvp-plugin')."</strong>".RSVP_END_PARA;
-				foreach($attendees as $a) {
-					$output .= "<form method=\"post\" action=\"$rsvp_form_action\">\r\n
-									<input type=\"hidden\" name=\"rsvpStep\" value=\"foundattendee\" />\r\n
-									<input type=\"hidden\" name=\"attendeeID\" value=\"".$a->id."\" />\r\n
-									<p class=\"rsvpParagraph\" style=\"text-align:left;\">\r\n
-							".htmlspecialchars($a->firstName." ".$a->lastName)." 
-							<input type=\"submit\" value=\"RSVP\" />\r\n
-							</p>\r\n</form>\r\n";
-				}
-				return rsvp_handle_output($text, $output);
-			} else {
-				$i = strlen($truncFirstName);
-			}
-		}
-	}
-  
-  if(rsvp_require_only_passcode_to_register()) {
-    $notFoundText = sprintf(__(RSVP_START_PARA.'<strong>We were unable to find anyone with the password you specified.</strong>'.RSVP_END_PARA, 'rsvp-plugin'));
-  } else {
-    $notFoundText = sprintf(__(RSVP_START_PARA.'<strong>We were unable to find anyone with a name of %1$s %2$s</strong>'.RSVP_END_PARA, 'rsvp-plugin'), htmlspecialchars($firstName), htmlspecialchars($lastName));
-  }
-  
-	
+
+	$notFoundText = sprintf(__(RSVP_START_PARA.'<strong>We were unable to find anyone with the password you specified.</strong>'.RSVP_END_PARA, 'rsvp-plugin'));
+  	
 	$notFoundText .= rsvp_frontend_greeting();
 	return rsvp_handle_output($text, $notFoundText);
 }
@@ -1023,11 +966,11 @@ function rsvp_handlersvp(&$output, &$text) {
 function rsvp_editAttendee(&$output, &$text) {
 	global $wpdb;
 	
-	if(is_numeric($_POST['attendeeID']) && ($_POST['attendeeID'] > 0)) {
+	if(is_numeric($_POST['familyID']) && ($_POST['familyID'] > 0)) {
 		// Try to find the user.
-		$attendee = $wpdb->get_row($wpdb->prepare("SELECT id, firstName, lastName, rsvpStatus 
-													FROM ".ATTENDEES_TABLE." 
-													WHERE id = %d", $_POST['attendeeID']));
+		$attendee = $wpdb->get_row($wpdb->prepare("SELECT id, pin, date, ip, email, alias, comments 
+													FROM ".FAMILIES_TABLE." 
+													WHERE id = %d", $_POST['familyID']));
 		if($attendee != null) {
 			$output .= RSVP_START_CONTAINER;
 			$output .= RSVP_START_PARA.__("Welcome back", 'rsvp-plugin')." ".htmlspecialchars($attendee->firstName." ".$attendee->lastName)."!".RSVP_END_PARA;
@@ -1135,14 +1078,9 @@ function rsvp_BeginningFormField($id, $additionalClasses) {
 function rsvp_frontend_greeting() {
 	global $rsvp_form_action;
 	$customGreeting = get_option(OPTION_GREETING);
-	if(rsvp_require_only_passcode_to_register()) {
-		$output = RSVP_START_PARA.__("Please enter your passcode to RSVP.", 'rsvp-plugin').RSVP_END_PARA;
-	} else if(rsvp_require_passcode()) {
-		$output = RSVP_START_PARA.__("Please enter your first name, last name and passcode to RSVP.", 'rsvp-plugin').RSVP_END_PARA;
-	} else {
-		$output = RSVP_START_PARA.__("Please enter your first and last name to RSVP.", 'rsvp-plugin').RSVP_END_PARA;
-	}
 	
+	$output = RSVP_START_PARA.__("Please enter your passcode to RSVP.", 'rsvp-plugin').RSVP_END_PARA;
+		
 	$firstName = "";
 	$lastName = "";
 	$passcode = "";
@@ -1152,8 +1090,8 @@ function rsvp_frontend_greeting() {
 	if(isset($_SESSION['rsvpLastName'])) {
 		$lastName = $_SESSION['rsvpLastName'];
 	}
-	if(isset($_SESSION['rsvpPasscode'])) {
-		$passcode = $_SESSION['rsvpPasscode'];
+	if(isset($_SESSION['rsvpPin'])) {
+		$pin = $_SESSION['rsvpPin'];
 	}
 	if(!empty($customGreeting)) {
 		$output = RSVP_START_PARA.nl2br($customGreeting).RSVP_END_PARA;
@@ -1173,16 +1111,10 @@ function rsvp_frontend_greeting() {
 
 	$output .= "<form name=\"rsvp\" method=\"post\" id=\"rsvp\" action=\"$rsvp_form_action\" autocomplete=\"off\">\r\n";
 	$output .= "	<input type=\"hidden\" name=\"rsvpStep\" value=\"find\" />";
-	if(!rsvp_require_only_passcode_to_register()) {
-		$output .= RSVP_START_PARA."<label for=\"firstName\">".__("First Name", 'rsvp-plugin').":</label> 
-									<input type=\"text\" name=\"firstName\" id=\"firstName\" size=\"30\" value=\"".htmlspecialchars($firstName)."\" class=\"required\" />".RSVP_END_PARA;
-		$output .= RSVP_START_PARA."<label for=\"lastName\">".__("Last Name", 'rsvp-plugin').":</label> 
-									<input type=\"text\" name=\"lastName\" id=\"lastName\" size=\"30\" value=\"".htmlspecialchars($lastName)."\" class=\"required\" />".RSVP_END_PARA;
-	}
-	if(rsvp_require_passcode()) {
-		$output .= RSVP_START_PARA."<label for=\"passcode\">".__("Passcode", 'rsvp-plugin').":</label> 
-									<input type=\"password\" name=\"passcode\" id=\"passcode\" size=\"30\" value=\"".htmlspecialchars($passcode)."\" class=\"required\" autocomplete=\"off\" />".RSVP_END_PARA;
-	}
+
+	$output .= RSVP_START_PARA."<label for=\"pin\">".__("PIN", 'rsvp-plugin').":</label> 
+									<input type=\"password\" name=\"pin\" id=\"pin\" size=\"30\" value=\"".htmlspecialchars($pin)."\" class=\"required\" autocomplete=\"off\" />".RSVP_END_PARA;
+	
 	$output .= RSVP_START_PARA."<input type=\"submit\" value=\"".__("Complete your RSVP!", 'rsvp-plugin')."\" />".RSVP_END_PARA;
 	$output .= "</form>\r\n";
 	$output .= RSVP_END_CONTAINER;
