@@ -98,53 +98,50 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 	$form = "<form id=\"rsvpForm\" name=\"rsvpForm\" method=\"post\" action=\"$rsvp_form_action\" autocomplete=\"off\">";
 	$form .= "	<input type=\"hidden\" name=\"familyID\" value=\"".$familyID."\" />";
 	$form .= "	<input type=\"hidden\" name=\"rsvpStep\" value=\"$rsvpStep\" />";
-	
-	$form .= RSVP_START_PARA;
-	if(trim(get_option(OPTION_RSVP_QUESTION)) != "") {
-		$form .= trim(get_option(OPTION_RSVP_QUESTION));
-	} else {
-		$form .= __("So, how about it?", 'rsvp-plugin');
-	}
-	$form .= RSVP_END_PARA;
-	
 
 	$sql = "SELECT id, family, name, attending, food FROM ".ATTENDEES_TABLE." WHERE family = %s;";
+	
+	if(trim(get_option(OPTION_RSVP_QUESTION)) != "") {
+		$question = trim(get_option(OPTION_RSVP_QUESTION));
+	} else {
+		$question = __("So, how about it?", 'rsvp-plugin');
+	}
 	
 	$attendees = $wpdb->get_results($wpdb->prepare($sql, $familyID));
 	if(count($attendees) > 0) {
 		foreach($attendees as $a) {
-			$form .= "<br /><div class=\"rsvpAttendee\">\r\n";
-			$form .= "<div class=\"rsvpAttendeeQuestions\">\r\n";
-			$form .= rsvp_BeginningFormField("", "").RSVP_START_PARA.sprintf(__(" Will %s be attending?", 'rsvp-plugin'), htmlspecialchars($a->name)).RSVP_END_PARA.
-					"<input type=\"radio\" name=\"attending".$a->id."\" value=\"Y\" id=\"attending".$a->id."Y\" " . (($a->attending == "Yes") ? " checked=\"checked\"" : "") . "/>".
-					"<label for=\"attending".$a->id."Y\">$yesVerbiage</label> <br />".
-					"<input type=\"radio\" name=\"attending".$a->id."\" value=\"N\" id=\"attending".$a->id."N\" " . (($a->attending == "No") ? " checked=\"checked\"" : "") . "/>".
-					"<label for=\"attending".$a->id."N\">$noVerbiage</label> <br />".
-					"<label for=\"food".$a->id."\">Food</label><select name=\"food".$a->id."\" id=\"food\" size=\"1\">".
-								"<option value=\"NoResponse\"" . (($a->food == "NoResponse") ? " selected=\"selected\"" : "") . ">No Response</option>".
-								"<option value=\"Meat\"" . (($a->food == "Meat") ? " selected=\"selected\"" : "") . ">Meat</option>".									
-								"<option value=\"Fish\"" . (($a->food == "Fish") ? " selected=\"selected\"" : "") . ">Fish</option>".
-								"<option value=\"Veg\"" . (($a->food == "Veg") ? " selected=\"selected\"" : "") . ">Vegetarian</option>".
-							"</select>".
-					RSVP_END_FORM_FIELD;
+			$form .= "<fieldset class=\"rsvp\">".
+                     "<legend class=\"rsvp\">". htmlspecialchars($a->name) ."</legend>";
+					 
 
-			$form .= "</div>\r\n"; //-- rsvpAttendeeQuestions
-			$form .= "</div>\r\n";
+			$form .="<label for=\"attending".$a->id."Y\" class=\"rsvp\">$question</label>".
+					"<select name=\"attending".$a->id."\" id=\"attending".$a->id."\" class=\"rsvp\"/>".
+						"<option value=\"Y\"". (($a->attending == "Yes") ? " selected=\"selected\"" : "") . " class=\"rsvp\">$yesVerbiage</option>".
+						"<option value=\"N\"". (($a->attending == "Yes") ? " selected=\"selected\"" : "") . " class=\"rsvp\">$noVerbiage</option>".
+					"</select>".
+					"<label for=\"food".$a->id."\" class=\"rsvp\">Food</label>".
+					"<select name=\"food".$a->id."\" id=\"food\" size=\"1\" class=\"rsvp\">".
+						"<option value=\"NoResponse\"" . (($a->food == "NoResponse") ? " selected=\"selected\"" : "") . " class=\"rsvp\">No Response</option>".
+						"<option value=\"Meat\"" . (($a->food == "Meat") ? " selected=\"selected\"" : "") . " class=\"rsvp\">Meat</option>".									
+						"<option value=\"Fish\"" . (($a->food == "Fish") ? " selected=\"selected\"" : "") . " class=\"rsvp\">Fish</option>".
+						"<option value=\"Veg\"" . (($a->food == "Veg") ? " selected=\"selected\"" : "") . " class=\"rsvp\">Vegetarian</option>".
+					"</select>";
+			$form .= "</fieldset>\r\n"; 
 		}
 	}
+	$form .= "<fieldset class=\"rsvp\">".
+		 "<legend class=\"rsvp\">More Info</legend>";
+
+	$form .= "<label for=\"email\" class=\"rsvp\">".__("Email Address", 'rsvp-plugin')."</label>".
+			 "<input type=\"text\" name=\"email\" id=\"email\" value=\"".htmlspecialchars($family->email)."\"  class=\"rsvp\"/><br />";
+	$form .= '<p style="font-size: 12px; padding-left: 150px">(We\'ll use your email address in the unlikely event of any changes to wedding timelines, parking, etc.)</p>';
 	
-	$form .= rsvp_BeginningFormField("", "rsvpBorderTop").
-	RSVP_START_PARA."<label for=\"email\">".__("Email Address", 'rsvp-plugin')."</label>".RSVP_END_PARA.
-					"<input type=\"text\" name=\"email\" id=\"email\" value=\"".htmlspecialchars($family->email)."\" />".
-	RSVP_END_FORM_FIELD;
-	
-	
-  	$form .= RSVP_START_PARA.$noteVerbiage.RSVP_END_PARA.
-      rsvp_BeginningFormField("", "").
-        "<textarea name=\"comments\" id=\"comments\" rows=\"7\" cols=\"50\">".((!empty($family->comments)) ? $family->comments : "")."</textarea>".RSVP_END_FORM_FIELD;
-						
-	$form .= RSVP_START_PARA."<input type=\"submit\" value=\"RSVP\" />".RSVP_END_PARA;
-	$form .= "</form>\r\n";
+  	$form .= "<label for=\"comments\" class=\"rsvp fullwidth\">".$noteVerbiage."</label><br />".
+			 "<textarea name=\"comments\" id=\"comments\" rows=\"7\" cols=\"50\" class=\"rsvp fullwidth\">".((!empty($family->comments)) ? $family->comments : "")."</textarea>";
+	$form .= "</fieldset>\r\n"; 
+	$form .= "<div class=\"fm-submit\">\r\n"; 
+	$form .= RSVP_START_PARA."<input type=\"submit\" value=\"RSVP\"  class=\"rsvp\"/>".RSVP_END_PARA;
+	$form .= "</div></form>\r\n";
 	
 	return $form;
 }

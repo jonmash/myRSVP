@@ -15,17 +15,17 @@ p.frm-desc {
 		
 }
 
-form {
+form.rsvp {
 	margin:0;
 	padding:0;
 }
-fieldset {
+fieldset.rsvp {
 	margin:0.25em 0;
 	border:none;
 	padding: 0.75em;
 	border-top:1px solid #004408;
 }
-legend {
+legend.rsvp {
 	margin:0.25em 0;
 	padding:0 .5em;
 	color:#004408;
@@ -34,7 +34,7 @@ legend {
 	font-weight:bold;
 	text-align: center;
 }
-label {
+label.rsvp {
 	float:left;
 	width:120px;
 	padding:0 1em;
@@ -42,7 +42,7 @@ label {
 	/*margin: 0.1em 0;*/
 }
 
-fieldset input, fieldset textarea {
+fieldset input.rsvp, fieldset textarea.rsvp {
 	width:250px;
 	border-top:1px solid #004408;
 	border-left:1px solid #004408;
@@ -52,7 +52,7 @@ fieldset input, fieldset textarea {
 	color:#333;
 	margin: 0.1em 0;
 }
-fieldset select {
+fieldset select.rsvp {
 	border-top:1px solid #004408;
 	border-left:1px solid #004408;
 	border-bottom:1px solid #7e54a6;
@@ -61,6 +61,12 @@ fieldset select {
 	color:#333;
 	padding:1px;
 	margin: 0.1em 0;
+}
+
+textarea.fullwidth, label.fullwidth {
+	width:inherit !important;
+	text-align:left;
+	padding:0 0.2em;
 }
 
 .fm-submit {
@@ -76,11 +82,11 @@ fieldset select {
 	color:#fff;
 	font-size:100%;
 }
-input:focus, textarea:focus, select:focus {
+input.rsvp:focus, textarea.rsvp:focus, select.rsvp:focus {
 	background:#F0FFF8;
 	color:#000;
 }
-input:hover, textarea:hover, select:hover {
+input.rsvp:hover, textarea.rsvp:hover, select.rsvp:hover {
 	background:#F0FFF8;
 	color:#000;
 }
