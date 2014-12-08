@@ -134,14 +134,14 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 	}
 	
 	$form .= rsvp_BeginningFormField("", "rsvpBorderTop").
-	RSVP_START_PARA."<label for=\"mainEmail\">".__("Email Address", 'rsvp-plugin')."</label>".RSVP_END_PARA.
-					"<input type=\"text\" name=\"mainEmail\" id=\"mainEmail\" value=\"".htmlspecialchars($attendee->email)."\" />".
+	RSVP_START_PARA."<label for=\"email\">".__("Email Address", 'rsvp-plugin')."</label>".RSVP_END_PARA.
+					"<input type=\"text\" name=\"email\" id=\"email\" value=\"".htmlspecialchars($family->email)."\" />".
 	RSVP_END_FORM_FIELD;
 	
 	
   	$form .= RSVP_START_PARA.$noteVerbiage.RSVP_END_PARA.
       rsvp_BeginningFormField("", "").
-        "<textarea name=\"rsvp_note\" id=\"rsvp_note\" rows=\"7\" cols=\"50\">".((!empty($attendee->note)) ? $attendee->note : $rsvp_saved_form_vars['rsvp_note'])."</textarea>".RSVP_END_FORM_FIELD;
+        "<textarea name=\"comments\" id=\"comments\" rows=\"7\" cols=\"50\">".((!empty($family->note)) ? $family->note : "")."</textarea>".RSVP_END_FORM_FIELD;
 						
 	$form .= RSVP_START_PARA."<input type=\"submit\" value=\"RSVP\" />".RSVP_END_PARA;
 	$form .= "</form>\r\n";
