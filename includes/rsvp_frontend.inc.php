@@ -215,7 +215,7 @@ function rsvp_handlersvp(&$output, &$text) {
 					$rsvpStatus = "No";
 				}
 				$wpdb->update(ATTENDEES_TABLE, array("attending" => $rsvpStatus,
-								"food" => $_POST['food'.$a->id], 
+								"food" => $_POST['food'.$a->id]), 
 								array("id" => $a->id), 
 								array("%s", "%s", "%s", "%s", "%s"), 
 								array("%d"));
