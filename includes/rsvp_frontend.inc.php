@@ -202,7 +202,7 @@ function rsvp_handlersvp(&$output, &$text) {
 				WHERE id = %s";
 		$family = $wpdb->get_row($wpdb->prepare($sql, $familyID));
 
-		$sql = "SELECT id, name FROM ".ATTENDEES_TABLE." 
+		$sql = "SELECT id, name, attending, food FROM ".ATTENDEES_TABLE." 
 				WHERE family = %s";
 		$attendees = $wpdb->get_results($wpdb->prepare($sql, $familyID));
 
