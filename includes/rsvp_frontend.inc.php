@@ -274,7 +274,7 @@ function rsvp_handlersvp(&$output, &$text) {
 		}
 		//TODO Add thank you note
 		$thankYouPrimary = "";
-		$thankYouAssociated = [];
+		$thankYouAssociated = array();
 		return rsvp_handle_output($text, frontend_rsvp_thankyou($thankYouPrimary, $thankYouAssociated));
 	} else {
 		return rsvp_handle_output($text, rsvp_frontend_greeting());
