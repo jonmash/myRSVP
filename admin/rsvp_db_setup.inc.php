@@ -8,7 +8,7 @@
 			  `id` int(11) NOT NULL AUTO_INCREMENT,
 			  `pin` varchar(10) NOT NULL,
 			  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			  `ip` varchar(16) DEFAULT NULL,
+			  `ip` varchar(45) DEFAULT NULL,
 			  `email` varchar(100) DEFAULT NULL,
 			  `alias` varchar(100) NOT NULL,
 			  `comments` varchar(500) DEFAULT NULL,
