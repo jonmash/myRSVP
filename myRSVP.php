@@ -203,7 +203,7 @@
 	function rsvp_printQueryDebugInfo() {
 		global $wpdb;
 		
-		if(get_option(OPTION_DEBUG_RSVP_QUERIES) == "Y" || 1==1) {
+		if(get_option(OPTION_DEBUG_RSVP_QUERIES) == "Y") {
 			echo "<br />Sql Output: ";
 			$wpdb->print_error();
 			echo "<br />";

@@ -256,10 +256,10 @@ function rsvp_handlersvp(&$output, &$text) {
 			}
 
 			$body .= "You have successfully RSVP'd.";
-
+			
 			if(count($attendees) > 0) {
-				foreach($attendees as $a) {
-					$body .= "\r\n\r\n--== Attendees ==--\r\n";
+				$body .= "\r\n\r\n--== Attendees ==--\r\n";			
+				foreach($attendees as $a) {	
 					$body .= stripslashes($a->name)." RSVP Status: ".$a->attending." Food Choice: ".$a->food."\r\n";
 				}
 			}
