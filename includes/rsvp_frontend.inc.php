@@ -221,6 +221,11 @@ function rsvp_handlersvp(&$output, &$text) {
 			}
 		}
 
+		//Update the attendee list to make sure it stuck
+		$sql = "SELECT id, name, attending, food FROM ".ATTENDEES_TABLE." 
+				WHERE family = %s";
+		$attendees = $wpdb->get_results($wpdb->prepare($sql, $familyID));
+		
 		$email = get_option(OPTION_NOTIFY_EMAIL);
     
 		if((get_option(OPTION_NOTIFY_ON_RSVP) == "Y") && ($email != "")) {
