@@ -4,23 +4,10 @@ input.error, textarea.error { border: 2px solid red; }
 .rsvpFormField {
   margin: 10px 0px;
 }
-#rsvpCustomGreeting {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
 .rsvpBorderTop {
   border-top: 1px solid #ccc;
 }
-.rsvpAdditionalAttendee {
+.rsvpAttendee {
   text-align:left;
   border-top: 1px solid #ccc;
-}
-.rsvpCheckboxCustomQ {
-  float: left;
-  padding-right: 10px;
-}
-.rsvpClear {
-  clear: both;
-  height: 1px;
-  line-height: 1px;
 }
