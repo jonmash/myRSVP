@@ -116,9 +116,9 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 			$form .= "<br /><div class=\"rsvpAttendee\">\r\n";
 			$form .= "<div class=\"rsvpAttendeeQuestions\">\r\n";
 			$form .= rsvp_BeginningFormField("", "").RSVP_START_PARA.sprintf(__(" Will %s be attending?", 'rsvp-plugin'), htmlspecialchars($a->name)).RSVP_END_PARA.
-					"<input type=\"radio\" name=\"attending".$a->id."\" value=\"Yes\" id=\"attending".$a->id."Y\" " . (($a->attending == "Yes") ? " checked=\"checked\"" : "") . "/>".
+					"<input type=\"radio\" name=\"attending".$a->id."\" value=\"Y\" id=\"attending".$a->id."Y\" " . (($a->attending == "Yes") ? " checked=\"checked\"" : "") . "/>".
 					"<label for=\"attending".$a->id."Y\">$yesVerbiage</label> <br />".
-					"<input type=\"radio\" name=\"attending".$a->id."\" value=\"No\" id=\"attending".$a->id."N\" " . (($a->attending == "No") ? " checked=\"checked\"" : "") . "/>".
+					"<input type=\"radio\" name=\"attending".$a->id."\" value=\"N\" id=\"attending".$a->id."N\" " . (($a->attending == "No") ? " checked=\"checked\"" : "") . "/>".
 					"<label for=\"attending".$a->id."N\">$noVerbiage</label> <br />".
 					"<label for=\"food".$a->id."\">Food</label><select name=\"food".$a->id."\" id=\"food\" size=\"1\">".
 								"<option value=\"NoResponse\"" . (($a->food == "NoResponse") ? " selected=\"selected\"" : "") . ">No Response</option>".
@@ -200,7 +200,7 @@ function rsvp_handlersvp(&$output, &$text) {
 								
 		$sql = "SELECT alias, comments, email, ip FROM ".FAMILIES_TABLE." 
 				WHERE id = %s";
-		$family = $wpdb->get_results($wpdb->prepare($sql, $familyID));
+		$family = $wpdb->get_row($wpdb->prepare($sql, $familyID));
 
 		$sql = "SELECT id, name FROM ".ATTENDEES_TABLE." 
 				WHERE family = %s";
@@ -230,7 +230,7 @@ function rsvp_handlersvp(&$output, &$text) {
 			
 			$body = "Hello, \r\n\r\n";
 						
-			$body .= stripslashes($family->alias)." has submitted their RSVP.";
+			$body .= stripslashes($family->alias)." has submitted their RSVP.\r\n\r\n";
 			
 			if(get_option(RSVP_OPTION_HIDE_NOTE) != "Y") {
 				$body .= "Note: ".stripslashes($family->comments)."\r\n";
