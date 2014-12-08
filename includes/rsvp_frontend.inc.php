@@ -141,7 +141,7 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 	
   	$form .= RSVP_START_PARA.$noteVerbiage.RSVP_END_PARA.
       rsvp_BeginningFormField("", "").
-        "<textarea name=\"comments\" id=\"comments\" rows=\"7\" cols=\"50\">".((!empty($family->note)) ? $family->note : "")."</textarea>".RSVP_END_FORM_FIELD;
+        "<textarea name=\"comments\" id=\"comments\" rows=\"7\" cols=\"50\">".((!empty($family->comments)) ? $family->comments : "")."</textarea>".RSVP_END_FORM_FIELD;
 						
 	$form .= RSVP_START_PARA."<input type=\"submit\" value=\"RSVP\" />".RSVP_END_PARA;
 	$form .= "</form>\r\n";
