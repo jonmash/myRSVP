@@ -117,7 +117,7 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 			$form .="<label for=\"attending".$a->id."Y\" class=\"rsvp\">$question</label>".
 					"<select name=\"attending".$a->id."\" id=\"attending".$a->id."\" class=\"rsvp\"/>".
 						"<option value=\"Y\"". (($a->attending == "Yes") ? " selected=\"selected\"" : "") . " class=\"rsvp\">$yesVerbiage</option>".
-						"<option value=\"N\"". (($a->attending == "Yes") ? " selected=\"selected\"" : "") . " class=\"rsvp\">$noVerbiage</option>".
+						"<option value=\"N\"". (($a->attending == "No") ? " selected=\"selected\"" : "") . " class=\"rsvp\">$noVerbiage</option>".
 					"</select>".
 					"<label for=\"food".$a->id."\" class=\"rsvp\">Food</label>".
 					"<select name=\"food".$a->id."\" id=\"food\" size=\"1\" class=\"rsvp\">".
@@ -348,10 +348,10 @@ function rsvp_frontend_greeting() {
 	$output .= "<form name=\"rsvp\" method=\"post\" id=\"rsvp\" action=\"$rsvp_form_action\" autocomplete=\"off\">\r\n";
 	$output .= "	<input type=\"hidden\" name=\"rsvpStep\" value=\"find\" />";
 
-	$output .= RSVP_START_PARA."<label for=\"pin\">".__("PIN", 'rsvp-plugin').":</label> 
-									<input type=\"password\" name=\"pin\" id=\"pin\" size=\"30\" value=\"".htmlspecialchars($pin)."\" class=\"required\" autocomplete=\"off\" />".RSVP_END_PARA;
+	$output .= "<label for=\"pin\" class=\"rsvp\">".__("PIN", 'rsvp-plugin').":</label> 
+									<input type=\"password\" name=\"pin\" id=\"pin\" size=\"30\" value=\"".htmlspecialchars($pin)."\" class=\"required rsvp\" autocomplete=\"off\" />";
 	
-	$output .= RSVP_START_PARA."<input type=\"submit\" value=\"".__("Complete your RSVP!", 'rsvp-plugin')."\" />".RSVP_END_PARA;
+	$output .= "<br /><br /><input type=\"submit\" value=\"".__("Complete your RSVP!", 'rsvp-plugin')."\" />";
 	$output .= "</form>\r\n";
 	$output .= RSVP_END_CONTAINER;
 	return $output;
