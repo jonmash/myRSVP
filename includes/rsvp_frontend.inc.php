@@ -118,25 +118,14 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 	}
 	$form .= RSVP_END_PARA;
 	
-    $form .= rsvp_BeginningFormField("", "rsvpBorderTop").
-      RSVP_START_PARA."<label for=\"mainEmail\">".__("Email Address", 'rsvp-plugin')."</label>".RSVP_END_PARA.
-        "<input type=\"text\" name=\"mainEmail\" id=\"mainEmail\" value=\"".htmlspecialchars($attendee->email)."\" />".
-      RSVP_END_FORM_FIELD;
-	
-	
-  	$form .= RSVP_START_PARA.$noteVerbiage.RSVP_END_PARA.
-      rsvp_BeginningFormField("", "").
-        "<textarea name=\"rsvp_note\" id=\"rsvp_note\" rows=\"7\" cols=\"50\">".((!empty($attendee->note)) ? $attendee->note : $rsvp_saved_form_vars['rsvp_note'])."</textarea>".RSVP_END_FORM_FIELD;
-	
-	
+
 	$sql = "SELECT id, family, name, attending, food FROM ".ATTENDEES_TABLE." WHERE family = %s;";
 	
 	$attendees = $wpdb->get_results($wpdb->prepare($sql, $familyID));
 	if(count($attendees) > 0) {
-		$form .= "<h3>".__("The following people are associated with you.  At this time you can RSVP for them as well.", 'rsvp-plugin')."</h3>";
 		foreach($attendees as $a) {
-			$form .= "<div class=\"rsvpAdditionalAttendee\">\r\n";
-			$form .= "<div class=\"rsvpAdditionalAttendeeQuestions\">\r\n";
+			$form .= "<div class=\"rsvpAttendee\">\r\n";
+			$form .= "<div class=\"rsvpAttendeeQuestions\">\r\n";
 			$form .= rsvp_BeginningFormField("", "").RSVP_START_PARA.sprintf(__(" Will %s be attending?", 'rsvp-plugin'), htmlspecialchars($a->name)).RSVP_END_PARA.
 					"<input type=\"radio\" name=\"attending".$a->id."\" value=\"Yes\" id=\"attending".$a->id."Y\" " . (($a->attending == "Yes") ? " checked=\"checked\"" : "") . "/>".
 					"<label for=\"attending".$a->id."Y\">$yesVerbiage</label> <br />".
@@ -150,99 +139,25 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 							"</select>".
 					RSVP_END_FORM_FIELD;
 
-			$form .= "</div>\r\n"; //-- rsvpAdditionalAttendeeQuestions
+			$form .= "</div>\r\n"; //-- rsvpAttendeeQuestions
 			$form .= "</div>\r\n";
 		}
 	}
 	
+	$form .= rsvp_BeginningFormField("", "rsvpBorderTop").
+	RSVP_START_PARA."<label for=\"mainEmail\">".__("Email Address", 'rsvp-plugin')."</label>".RSVP_END_PARA.
+					"<input type=\"text\" name=\"mainEmail\" id=\"mainEmail\" value=\"".htmlspecialchars($attendee->email)."\" />".
+	RSVP_END_FORM_FIELD;
+	
+	
+  	$form .= RSVP_START_PARA.$noteVerbiage.RSVP_END_PARA.
+      rsvp_BeginningFormField("", "").
+        "<textarea name=\"rsvp_note\" id=\"rsvp_note\" rows=\"7\" cols=\"50\">".((!empty($attendee->note)) ? $attendee->note : $rsvp_saved_form_vars['rsvp_note'])."</textarea>".RSVP_END_FORM_FIELD;
 						
 	$form .= RSVP_START_PARA."<input type=\"submit\" value=\"RSVP\" />".RSVP_END_PARA;
 	$form .= "</form>\r\n";
 	
 	return $form;
-}
-
-function rsvp_revtrievePreviousAnswer($attendeeID, $questionID) {
-	global $wpdb;
-	$answers = "";
-	if(($attendeeID > 0) && ($questionID > 0)) {
-		$rs = $wpdb->get_results($wpdb->prepare("SELECT answer FROM ".ATTENDEE_ANSWERS." WHERE questionID = %d AND attendeeID = %d", $questionID, $attendeeID));
-		if(count($rs) > 0) {
-			$answers = stripslashes($rs[0]->answer);
-		}
-	}
-	
-	return $answers;
-}
-
-function rsvp_buildAdditionalQuestions($attendeeID, $prefix) {
-	global $wpdb, $rsvp_saved_form_vars;
-	$output = "<div class=\"rsvpCustomQuestions\">";
-	
-	$sql = "SELECT q.id, q.question, questionType FROM ".QUESTIONS_TABLE." q 
-					INNER JOIN ".QUESTION_TYPE_TABLE." qt ON qt.id = q.questionTypeID 
-					WHERE q.permissionLevel = 'public' 
-					  OR (q.permissionLevel = 'private' AND q.id IN (SELECT questionID FROM ".QUESTION_ATTENDEES_TABLE." WHERE attendeeID = $attendeeID))
-					ORDER BY q.sortOrder ";
-  $questions = $wpdb->get_results($sql);
-	if(count($questions) > 0) {
-		foreach($questions as $q) {
-			$oldAnswer = rsvp_revtrievePreviousAnswer($attendeeID, $q->id);
-			
-			$output .= rsvp_BeginningFormField("", "").RSVP_START_PARA.stripslashes($q->question).RSVP_END_PARA;
-				
-				if($q->questionType == QT_MULTI) {
-					$oldAnswers = explode("||", $oldAnswer);
-					
-					$answers = $wpdb->get_results($wpdb->prepare("SELECT id, answer FROM ".QUESTION_ANSWERS_TABLE." WHERE questionID = %d", $q->id));
-					if(count($answers) > 0) {
-						$i = 0;
-						foreach($answers as $a) {
-							$output .= rsvp_BeginningFormField("", "rsvpCheckboxCustomQ")."<input type=\"checkbox\" name=\"".$prefix."question".$q->id."[]\" id=\"".$prefix."question".$q->id.$a->id."\" value=\"".$a->id."\" "
-							  .((in_array(stripslashes($a->answer), $oldAnswers)) ? " checked=\"checked\"" : "")." />".
-                "<label for=\"".$prefix."question".$q->id.$a->id."\">".stripslashes($a->answer)."</label>\r\n".RSVP_END_FORM_FIELD;
-							$i++;
-						}
-            $output .= "<div class=\"rsvpClear\">&nbsp;</div>\r\n";
-					}
-				} else if ($q->questionType == QT_DROP) {
-					//$oldAnswers = explode("||", $oldAnswer);
-					
-					$output .= "<select name=\"".$prefix."question".$q->id."\" size=\"1\">\r\n".
-						"<option value=\"\">--</option>\r\n";
-					$answers = $wpdb->get_results($wpdb->prepare("SELECT id, answer FROM ".QUESTION_ANSWERS_TABLE." WHERE questionID = %d", $q->id));
-					if(count($answers) > 0) {
-						foreach($answers as $a) {
-							$output .= "<option value=\"".$a->id."\" ".((stripslashes($a->answer) == $oldAnswer) ? " selected=\"selected\"" : "").">".stripslashes($a->answer)."</option>\r\n";
-						}
-					}
-					$output .= "</select>\r\n";
-				} else if ($q->questionType == QT_LONG) {
-					$output .= "<textarea name=\"".$prefix."question".$q->id."\" rows=\"5\" cols=\"35\">".htmlspecialchars($oldAnswer)."</textarea>";
-				} else if ($q->questionType == QT_RADIO) {
-					//$oldAnswers = explode("||", $oldAnswer);
-					$answers = $wpdb->get_results($wpdb->prepare("SELECT id, answer FROM ".QUESTION_ANSWERS_TABLE." WHERE questionID = %d", $q->id));
-					if(count($answers) > 0) {
-						$i = 0;
-						$output .= RSVP_START_PARA;
-						foreach($answers as $a) {
-							$output .= "<input type=\"radio\" name=\"".$prefix."question".$q->id."\" id=\"".$prefix."question".$q->id.$a->id."\" value=\"".$a->id."\" "
-							  .((stripslashes($a->answer) == $oldAnswer) ? " checked=\"checked\"" : "")." /> ".
-              "<label for=\"".$prefix."question".$q->id.$a->id."\">".stripslashes($a->answer)."</label>\r\n";
-							$i++;
-						}
-						$output .= RSVP_END_PARA;
-					}
-				} else {
-					// normal text input
-					$output .= "<input type=\"text\" name=\"".$prefix."question".$q->id."\" value=\"".htmlspecialchars($oldAnswer)."\" size=\"25\" />";
-				}
-				
-			$output .= RSVP_END_FORM_FIELD;
-		}
-	}
-	
-	return $output."</div>";
 }
 
 function rsvp_find(&$output, &$text) {
@@ -255,28 +170,21 @@ function rsvp_find(&$output, &$text) {
 
   	$family = $wpdb->get_row($wpdb->prepare("SELECT id, pin, date, ip, email, alias, comments   FROM ".FAMILIES_TABLE." 
 																								WHERE pin = %s", $pin));
-	
-	printf("SELECT id, pin, date, ip, email, alias, comments   FROM ".FAMILIES_TABLE." WHERE pin = %s", $pin);
-	
-	print_r($family);
+		
 	rsvp_printQueryDebugInfo();
 	if($family != null) {
 		// hey we found something, we should move on and print out any associated users and let them rsvp
 		$output = "<div>\r\n";
-		if(strtolower($family->rsvpStatus) == "noresponse") {
-			$output .= RSVP_START_PARA."Hi ".htmlspecialchars(stripslashes($family->firstName." ".$family->lastName))."!".RSVP_END_PARA;
+		$output .= RSVP_START_PARA."Hi ".htmlspecialchars(stripslashes($family->alias))."!".RSVP_END_PARA;
 						
-			if(trim(get_option(OPTION_WELCOME_TEXT)) != "") {
-				$output .= RSVP_START_PARA.trim(get_option(OPTION_WELCOME_TEXT)).RSVP_END_PARA;
-			} else {
-				$output .= RSVP_START_PARA.__("There are a few more questions we need to ask you if you could please fill them out below to finish up the RSVP process.", 'rsvp-plugin').RSVP_END_PARA;
-			}
-						
-			$output .= rsvp_frontend_main_form($family->id);
+		if(trim(get_option(OPTION_WELCOME_TEXT)) != "") {
+			$output .= RSVP_START_PARA.trim(get_option(OPTION_WELCOME_TEXT)).RSVP_END_PARA;
 		} else {
-			$output .= rsvp_frontend_prompt_to_edit($family);
+			$output .= RSVP_START_PARA.__("There are a few more questions we need to ask you if you could please fill them out below to finish up the RSVP process.", 'rsvp-plugin').RSVP_END_PARA;
 		}
-		
+						
+		$output .= rsvp_frontend_main_form($family->id);
+
 		return rsvp_handle_output($text, $output."</div>\r\n");
 	}
 
