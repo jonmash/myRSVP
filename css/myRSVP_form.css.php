@@ -1,10 +1,16 @@
+<?php
+    header("Content-type: text/css; charset: UTF-8");
+
+   $mainColor = "#004408";
+
+?>
 @charset "utf-8";
 /* CSS Document */
 
 .frm-title {
 	margin: 0.5em 0;
 	padding:0;
-	color:#004408;
+	color: <?php echo $mainColor; ?>;
 	background:transparent;
 	font-size:1.4em;
 	font-weight:bold;
@@ -24,12 +30,12 @@ fieldset.rsvp {
 	margin:0.25em 0;
 	border:none;
 	padding: 0.75em;
-	border-top:1px solid #004408;
+	border-top:1px solid <?php echo $mainColor; ?>;
 }
 legend.rsvp {
 	margin:0.25em 0;
 	padding:0 .5em;
-	color:#004408;
+	color:<?php echo $mainColor; ?>;
 	background:transparent;
 	font-size:1.3em;
 	font-weight:bold;
@@ -45,19 +51,19 @@ label.rsvp {
 
 fieldset input.rsvp, fieldset textarea.rsvp {
 	width:250px;
-	border-top:1px solid #004408;
-	border-left:1px solid #004408;
-	border-bottom:1px solid #004408;
-	border-right:1px solid #004408;
+	border-top:1px solid <?php echo $mainColor; ?>;
+	border-left:1px solid <?php echo $mainColor; ?>;
+	border-bottom:1px solid <?php echo $mainColor; ?>;
+	border-right:1px solid <?php echo $mainColor; ?>;
 	padding:1px;
 	color:#333;
 	margin: 0.1em 0;
 }
 fieldset select.rsvp {
-	border-top:1px solid #004408;
-	border-left:1px solid #004408;
-	border-bottom:1px solid #7e54a6;
-	border-right:1px solid #7e54a6;
+	border-top:1px solid <?php echo $mainColor; ?>;
+	border-left:1px solid <?php echo $mainColor; ?>;
+	border-bottom:1px solid <?php echo $mainColor; ?>;
+	border-right:1px solid <?php echo $mainColor; ?>;
 	width: 160px;
 	color:#333;
 	padding:1px;
@@ -79,16 +85,16 @@ textarea.fullwidth, label.fullwidth {
 .fm-submit input {
 	border:1px solid #333;
 	padding:2px 1em;
-	background:#004408;
+	background:<?php echo $mainColor; ?>;
 	color:#fff;
 	font-size:100%;
 }
 input.rsvp:focus, textarea.rsvp:focus, select.rsvp:focus {
-	background:#F0FFF8;
+	background:#DDDDDD;
 	color:#000;
 }
 input.rsvp:hover, textarea.rsvp:hover, select.rsvp:hover {
-	background:#F0FFF8;
+	background:#DDDDDD;
 	color:#000;
 }
 
