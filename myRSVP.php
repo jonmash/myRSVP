@@ -189,8 +189,8 @@
 	function rsvp_init() {
 		wp_register_script('jquery_validate', rsvp_getHttpProtocol()."://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js");
 		wp_register_script('rsvp_plugin', plugins_url("js/myRSVP.js", RSVP_PLUGIN_FILE));
-		wp_register_style('rsvp_css', plugins_url("css/myRSVP.css", RSVP_PLUGIN_FILE));
-		wp_register_style('rsvp_form_css', plugins_url("css/myRSVP_form.css", RSVP_PLUGIN_FILE));
+		wp_register_style('rsvp_css', plugins_url("css/myRSVP.css.php", RSVP_PLUGIN_FILE));
+		wp_register_style('rsvp_form_css', plugins_url("css/myRSVP_form.css.php", RSVP_PLUGIN_FILE));
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery_validate');
 		wp_enqueue_script('rsvp_plugin');
