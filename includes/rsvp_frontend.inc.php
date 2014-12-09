@@ -258,9 +258,9 @@ function rsvp_handlersvp(&$output, &$text) {
 				$body .= "\r\n";
 				$body .= get_option(OPTION_RSVP_EMAIL_TEXT);
 				$body .= "\r\n";
+			} else {
+				$body .= "You have successfully RSVP'd.";
 			}
-
-			$body .= "You have successfully RSVP'd.";
 			
 			if(count($attendees) > 0) {
 				$body .= "\r\n\r\n--== Attendees ==--\r\n";			
