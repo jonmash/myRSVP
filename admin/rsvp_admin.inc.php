@@ -35,7 +35,7 @@
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_main_colour">Main Colour:</label></th>
 						<td align="left"><em>Default is: &quot;#004408&quot;</em><br />
-							<input type="text" name="rsvp_main_colour" id="rsvp_main_colour" value="<?php echo get_option(OPTION_RSVP_MAIN_COLOUR); ?>" size="65" class="a_colour_field"/></td>
+							<input type="text" name="rsvp_main_colour" id="rsvp_main_colour" value="<?php echo get_option(OPTION_RSVP_MAIN_COLOUR); ?>" size="65" class="a_colour_field" data-default-color="<?php echo get_option(OPTION_RSVP_MAIN_COLOUR); ?>"/></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>">Email Text:</label></th>

@@ -186,11 +186,14 @@
 		wp_enqueue_script("jquery-ui-datepicker");
 		wp_enqueue_script("jquery_table_sort");
 		wp_enqueue_style( 'jquery_ui_stylesheet');
+		wp_enqueue_script( 'wp-color-picker');
+		wp_enqueue_script('rsvp_admin_script', false, array( 'wp-color-picker' ), false, true );
 	}
 	
 	function rsvp_init() {
 		wp_register_script('jquery_validate', rsvp_getHttpProtocol()."://ajax.aspnetcdn.com/ajax/jquery.validate/1.10.0/jquery.validate.min.js");
 		wp_register_script('rsvp_plugin', plugins_url("js/myRSVP.js", RSVP_PLUGIN_FILE));
+		wp_register_script('rsvp_admin_script', plugins_url("admin/admin.js", RSVP_PLUGIN_FILE));
 		wp_register_style('rsvp_css', plugins_url("css/myRSVP.css.php", RSVP_PLUGIN_FILE));
 		wp_register_style('rsvp_form_css', plugins_url("css/myRSVP_form.css.php", RSVP_PLUGIN_FILE));
 		wp_enqueue_script('jquery');
