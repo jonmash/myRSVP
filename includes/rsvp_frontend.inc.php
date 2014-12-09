@@ -136,11 +136,13 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 			 "<input type=\"text\" name=\"email\" id=\"email\" value=\"".htmlspecialchars($family->email)."\"  class=\"rsvp\"/><br />";
 	$form .= '<p style="font-size: 12px; padding-left: 150px">(We\'ll use your email address in the unlikely event of any changes to wedding timelines, parking, etc.)</p>';
 	
-  	$form .= "<label for=\"comments\" class=\"rsvp fullwidth\">".$noteVerbiage."</label><br />".
-			 "<textarea name=\"comments\" id=\"comments\" rows=\"7\" cols=\"50\" class=\"rsvp fullwidth\">".((!empty($family->comments)) ? $family->comments : "")."</textarea>";
+	if(trim(get_option(OPTION_RSVP_HIDE_NOTE)) != "Y") {
+		$form .= "<label for=\"comments\" class=\"rsvp fullwidth\">".$noteVerbiage."</label><br />".
+				 "<textarea name=\"comments\" id=\"comments\" rows=\"7\" cols=\"50\" class=\"rsvp fullwidth\">".((!empty($family->comments)) ? $family->comments : "")."</textarea>";
+	}
 	$form .= "</fieldset>\r\n"; 
 	$form .= "<div class=\"fm-submit\">\r\n"; 
-	$form .= RSVP_START_PARA."<input type=\"submit\" value=\"RSVP\"  class=\"rsvp\"/>".RSVP_END_PARA;
+	$form .= "<input type=\"submit\" value=\"RSVP\"  class=\"rsvp\"/>";
 	$form .= "</div></form>\r\n";
 	
 	return $form;

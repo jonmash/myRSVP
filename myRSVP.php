@@ -28,7 +28,7 @@
 	define("OPTION_YES_VERBIAGE", "rsvp_yes_verbiage");
 	define("OPTION_NO_VERBIAGE", "rsvp_no_verbiage");
 	define("OPTION_NOTE_VERBIAGE", "rsvp_note_verbiage");
-	define("RSVP_OPTION_HIDE_NOTE", "rsvp_hide_note_field");
+	define("OPTION_RSVP_HIDE_NOTE", "rsvp_hide_note_field");
 	define("OPTION_NOTIFY_ON_RSVP", "rsvp_notify_when_rsvp");
 	define("OPTION_NOTIFY_EMAIL", "rsvp_notify_email_address");
 	define("OPTION_WELCOME_TEXT", "rsvp_custom_welcome");
@@ -168,7 +168,7 @@
 		register_setting('rsvp-option-group', OPTION_WELCOME_TEXT);
 		register_setting('rsvp-option-group', OPTION_RSVP_QUESTION);
 		register_setting('rsvp-option-group', OPTION_RSVP_CUSTOM_YES_NO);
-		register_setting('rsvp-option-group', RSVP_OPTION_HIDE_NOTE);
+		register_setting('rsvp-option-group', OPTION_RSVP_HIDE_NOTE);
 		register_setting('rsvp-option-group', OPTION_RSVP_GUEST_EMAIL_CONFIRMATION);
 		register_setting('rsvp-option-group', OPTION_RSVP_DISABLE_CUSTOM_EMAIL_FROM);
 		register_setting('rsvp-option-group', OPTION_RSVP_EMAIL_TEXT);
