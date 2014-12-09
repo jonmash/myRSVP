@@ -44,6 +44,10 @@ jQuery(document).ready(function(){
     }
   });
   
+	jQuery(document).ready(function($){
+		$('.a_colour_field').wpColorPicker();
+	});
+  
 	jQuery("#addRsvp").click(function() {
 		handleAddRsvpClick();
 	});

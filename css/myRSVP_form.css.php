@@ -90,11 +90,11 @@ textarea.fullwidth, label.fullwidth {
 	font-size:100%;
 }
 input.rsvp:focus, textarea.rsvp:focus, select.rsvp:focus {
-	background:#DDDDDD;
+	background:#EEE;
 	color:#000;
 }
 input.rsvp:hover, textarea.rsvp:hover, select.rsvp:hover {
-	background:#DDDDDD;
+	background:#EEE;
 	color:#000;
 }
 

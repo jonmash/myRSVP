@@ -37,6 +37,7 @@
 	define("OPTION_RSVP_GUEST_EMAIL_CONFIRMATION", "rsvp_guest_email_confirmation");
 	define("OPTION_RSVP_EMAIL_TEXT", "rsvp_email_text");
 	define("OPTION_DEBUG_RSVP_QUERIES", "rsvp_debug_queries");
+	define("OPTION_RSVP_MAIN_COLOUR", "rsvp_main_colour");
 	define("RSVP_DB_VERSION", "1");
 	define("QT_SHORT", "shortAnswer");
 	define("QT_MULTI", "multipleChoice");
@@ -173,8 +174,9 @@
 		register_setting('rsvp-option-group', OPTION_RSVP_DISABLE_CUSTOM_EMAIL_FROM);
 		register_setting('rsvp-option-group', OPTION_RSVP_EMAIL_TEXT);
 		register_setting('rsvp-option-group', OPTION_DEBUG_RSVP_QUERIES);
+		register_setting('rsvp-option-group', OPTION_RSVP_MAIN_COLOUR);
     
-		wp_register_script('jquery_table_sort', plugins_url('jquery.tablednd_0_5.js',RSVP_PLUGIN_FILE));
+		wp_register_script('jquery_table_sort', plugins_url('js/jquery.tablednd_0_5.js',RSVP_PLUGIN_FILE));
 		wp_register_script('jquery_ui', rsvp_getHttpProtocol()."://ajax.microsoft.com/ajax/jquery.ui/1.8.5/jquery-ui.js");
 		wp_register_style('jquery_ui_stylesheet', rsvp_getHttpProtocol()."://ajax.microsoft.com/ajax/jquery.ui/1.8.5/themes/redmond/jquery-ui.css");
 	}
@@ -193,7 +195,9 @@
 		wp_register_style('rsvp_form_css', plugins_url("css/myRSVP_form.css.php", RSVP_PLUGIN_FILE));
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery_validate');
-		wp_enqueue_script('rsvp_plugin');
+		wp_enqueue_script( 'wp-color-picker');
+		wp_enqueue_script('rsvp_plugin', false, array( 'wp-color-picker' ), false, true );
+		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_style("rsvp_css");
 		wp_enqueue_style("rsvp_form_css");
 

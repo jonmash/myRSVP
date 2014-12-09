@@ -33,6 +33,11 @@
 							<textarea name="rsvp_custom_welcome" id="rsvp_custom_welcome" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_WELCOME_TEXT)); ?></textarea></td>
 					</tr>
 					<tr valign="top">
+						<th scope="row"><label for="rsvp_main_colour">Main Colour:</label></th>
+						<td align="left"><em>Default is: &quot;#004408&quot;</em><br />
+							<input type="text" name="rsvp_main_colour" id="rsvp_main_colour" value="<?php echo get_option(OPTION_RSVP_MAIN_COLOUR); ?>" size="65" class="a_colour_field"/></td>
+					</tr>
+					<tr valign="top">
 						<th scope="row"><label for="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>">Email Text:</label></th>
 						<td align="left"><em>Sent to guests in confirmation, at top of email</em><br /><textarea name="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>" id="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_RSVP_EMAIL_TEXT)); ?></textarea></td>
 					</tr>
