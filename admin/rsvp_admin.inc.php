@@ -25,46 +25,50 @@
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_custom_greeting">Custom Greeting:</label></th>
-						<td align="left"><textarea name="rsvp_custom_greeting" id="rsvp_custom_greeting" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_GREETING)); ?></textarea></td>
+						<td align="left"><em>Default is: &quot;Enter your PIN below:&quot;</em><br /><textarea name="rsvp_custom_greeting" id="rsvp_custom_greeting" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_GREETING)); ?></textarea></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_custom_welcome">Custom Welcome:</label></th>
-						<td align="left">Default is: &quot;There are a few more questions we need to ask you if you could please fill them out below to finish up the RSVP process.&quot;<br />
+						<td align="left"><em>Default is: &quot;There are a few more questions we need to ask you if you could please fill them out below to finish up the RSVP process.&quot;</em><br />
 							<textarea name="rsvp_custom_welcome" id="rsvp_custom_welcome" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_WELCOME_TEXT)); ?></textarea></td>
 					</tr>
 					<tr valign="top">
-						<th scope="row"><label for="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>">Email Text: <br />Sent to guests in confirmation, at top of email</label></th>
-						<td align="left"><textarea name="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>" id="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_RSVP_EMAIL_TEXT)); ?></textarea></td>
+						<th scope="row"><label for="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>">Email Text:</label></th>
+						<td align="left"><em>Sent to guests in confirmation, at top of email</em><br /><textarea name="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>" id="<?php echo OPTION_RSVP_EMAIL_TEXT; ?>" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_RSVP_EMAIL_TEXT)); ?></textarea></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_custom_question_text">RSVP Question Verbiage:</label></th>
-						<td align="left">Default is: &quot;So, how about it?&quot;<br />
+						<td align="left"><em>Default is: &quot;So, how about it?&quot;</em><br />
 							<input type="text" name="rsvp_custom_question_text" id="rsvp_custom_question_text" 
 							value="<?php echo htmlspecialchars(get_option(OPTION_RSVP_QUESTION)); ?>" size="65" /></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_yes_verbiage">RSVP Yes Verbiage:</label></th>
-						<td align="left"><input type="text" name="rsvp_yes_verbiage" id="rsvp_yes_verbiage" 
+						<td align="left"><em>Default is: &quot;Yes, of course I will be there!&quot;</em><br />
+							<input type="text" name="rsvp_yes_verbiage" id="rsvp_yes_verbiage" 
 							value="<?php echo htmlspecialchars(get_option(OPTION_YES_VERBIAGE)); ?>" size="65" /></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_no_verbiage">RSVP No Verbiage:</label></th>
-						<td align="left"><input type="text" name="rsvp_no_verbiage" id="rsvp_no_verbiage" 
+						<td align="left"><em>Default is: &quot;No, unfortunately, I cannot make it.&quot;</em><br />
+							<input type="text" name="rsvp_no_verbiage" id="rsvp_no_verbiage" 
 							value="<?php echo htmlspecialchars(get_option(OPTION_NO_VERBIAGE)); ?>" size="65" /></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_note_verbiage">Note Verbiage:</label></th>
-						<td align="left"><textarea name="rsvp_note_verbiage" id="rsvp_note_verbiage" rows="3" cols="60"><?php 
+						<td align="left"><em>Default is: &quot;If you have any <strong style=\"color:red;\">food allergies</strong>, please indicate what they are in the &quot;notes&quot; section below.  Or, if you just want to send us a note, please feel free.  If you have any questions, please send us an email.&quot;</em><br />
+							<textarea name="rsvp_note_verbiage" id="rsvp_note_verbiage" rows="3" cols="60"><?php 
 							echo htmlspecialchars(get_option(OPTION_NOTE_VERBIAGE)); ?></textarea></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_hide_note_field">Hide Note Field:</label></th>
 						<td align="left"><input type="checkbox" name="rsvp_hide_note_field" id="rsvp_hide_note_field" value="Y" 
-							<?php echo ((get_option(RSVP_OPTION_HIDE_NOTE) == "Y") ? " checked=\"checked\"" : ""); ?> /></td>
+							<?php echo ((get_option(OPTION_RSVP_HIDE_NOTE) == "Y") ? " checked=\"checked\"" : ""); ?> /></td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="rsvp_custom_thankyou">Custom Thank You:</label></th>
-						<td align="left"><textarea name="rsvp_custom_thankyou" id="rsvp_custom_thankyou" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_THANKYOU)); ?></textarea></td>
+						<td align="left"><em>Default is: &quot;Thank you, {name} for RSVPing!&quot;</em><br />
+						<textarea name="rsvp_custom_thankyou" id="rsvp_custom_thankyou" rows="5" cols="60"><?php echo htmlspecialchars(get_option(OPTION_THANKYOU)); ?></textarea></td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="rsvp_notify_when_rsvp">Notify When Guest RSVPs</label></th>

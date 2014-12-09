@@ -87,15 +87,15 @@ function rsvp_frontend_main_form($familyID, $rsvpStep = "handleRsvp") {
 	$family = $wpdb->get_row($wpdb->prepare("SELECT id, pin, date, ip, email, alias, comments FROM ".FAMILIES_TABLE." WHERE id = %d", $familyID));
 
 	$yesVerbiage = ((trim(get_option(OPTION_YES_VERBIAGE)) != "") ? get_option(OPTION_YES_VERBIAGE) : 
-	__("Yes, of course I will be there! Who doesn't like family, friends, weddings, and a good time?", 'rsvp-plugin'));
+	__("Yes, of course I will be there!", 'rsvp-plugin'));
 	
 	$noVerbiage = ((trim(get_option(OPTION_NO_VERBIAGE)) != "") ? get_option(OPTION_NO_VERBIAGE) : 
-	__("Um, unfortunately, there is a Star Trek marathon on that day that I just cannot miss.", 'rsvp-plugin'));
+	__("No, unfortunately, I cannot make it.", 'rsvp-plugin'));
 
 	$noteVerbiage = ((trim(get_option(OPTION_NOTE_VERBIAGE)) != "") ? get_option(OPTION_NOTE_VERBIAGE) : 
 	__("If you have any <strong style=\"color:red;\">food allergies</strong>, please indicate what they are in the &quot;notes&quot; section below.  Or, if you just want to send us a note, please feel free.  If you have any questions, please send us an email.", 'rsvp-plugin'));
 
-	$form = "<form id=\"rsvpForm\" name=\"rsvpForm\" method=\"post\" action=\"$rsvp_form_action\" autocomplete=\"off\">";
+	$form = "<form id=\"rsvpForm\" name=\"rsvpForm\" method=\"post\" action=\"$rsvp_form_action\" autocomplete=\"off\" class=\"rsvp\">";
 	$form .= "	<input type=\"hidden\" name=\"familyID\" value=\"".$familyID."\" />";
 	$form .= "	<input type=\"hidden\" name=\"rsvpStep\" value=\"$rsvpStep\" />";
 
@@ -236,7 +236,7 @@ function rsvp_handlersvp(&$output, &$text) {
 						
 			$body .= stripslashes($family->alias)." has submitted their RSVP.\r\n\r\n";
 			
-			if(get_option(RSVP_OPTION_HIDE_NOTE) != "Y") {
+			if(get_option(OPTION_RSVP_HIDE_NOTE) != "Y") {
 				$body .= "Note: ".stripslashes($family->comments)."\r\n";
 			}
 
@@ -348,7 +348,9 @@ function rsvp_frontend_greeting() {
 	}
 	if(!empty($customGreeting)) {
 		$output = RSVP_START_PARA.nl2br($customGreeting).RSVP_END_PARA;
-	} 
+	} else {
+		$output = RSVP_START_PARA."Enter your PIN below:".RSVP_END_PARA;
+	}
   
 	$output .= RSVP_START_CONTAINER;
 
