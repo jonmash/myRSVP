@@ -38,7 +38,7 @@
 	if($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
 		$sql = "CREATE TABLE IF NOT EXISTS `".$table."` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT,
-			  `ip` varchar(16) NOT NULL,
+			  `ip` varchar(45) NOT NULL,
 			  `starttime` datetime NOT NULL,
 			  `endtime` datetime NOT NULL,
 			  `attempts` int(11) NOT NULL,
@@ -47,6 +47,22 @@
 		)ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 		$wpdb->query($sql);
 	}			
+
+	//Forms Table
+	$table = FORMS_TABLE;
+	if($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
+		$sql = "CREATE TABLE IF NOT EXISTS `".$table."` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `name` varchar(60) NOT NULL,
+			  `starttime` datetime NOT NULL,
+			  `endtime` datetime NOT NULL,
+			  `settings` TEXT NOT NULL,
+			  `family_form` TEXT NOT NULL,
+			  `attendee_form` TEXT NOT NULL,
+			  PRIMARY KEY (`id`)
+		)ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+		$wpdb->query($sql);
+	}	
 	
 	add_option("rsvp_db_version", "0");
 	update_option( "rsvp_db_version", RSVP_DB_VERSION);

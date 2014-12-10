@@ -16,6 +16,8 @@
 	define("ATTENDEES_TABLE", $wpdb->prefix."rsvp_attendees");
 	define("ATTEMPTS_TABLE", $wpdb->prefix."rsvp_attempts");
 	define("FAMILIES_TABLE", $wpdb->prefix."rsvp_families");
+	define("FORMS_TABLE", $wpdb->prefix."rsvp_forms");
+	
 
 	define("EDIT_SESSION_KEY", "RsvpEditAttendeeID");
 	define("EDIT_QUESTION_KEY", "RsvpEditQuestionID");
